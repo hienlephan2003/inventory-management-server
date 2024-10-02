@@ -21,8 +21,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.upsertProduct(productModel));
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<ProductModelRes> deleteDish(@PathVariable Long id) {
+    public ResponseEntity<ProductModelRes> deleteProduct(@PathVariable Long id) {
         return ResponseEntity.ok(productService.deleteProduct(id));
     }
-
 }
