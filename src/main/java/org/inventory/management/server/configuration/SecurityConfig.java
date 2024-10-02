@@ -1,7 +1,7 @@
 package org.inventory.management.server.configuration;
 
 import lombok.RequiredArgsConstructor;
-import org.inventory.management.server.security.JwtAuthFilter.JwtAuthFilter;
+import org.inventory.management.server.security.JwtAuthFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

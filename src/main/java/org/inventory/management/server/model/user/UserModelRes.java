@@ -4,13 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.inventory.management.server.model.base.BaseModel;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserModelRes extends BaseModel {
+public class UserModelRes  {
     private String username;
     private Role role;
     private String accessToken;
