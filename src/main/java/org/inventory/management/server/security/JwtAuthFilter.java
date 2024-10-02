@@ -1,4 +1,4 @@
-package org.inventory.management.server.security.JwtAuthFilter;
+package org.inventory.management.server.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
