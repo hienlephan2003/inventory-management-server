@@ -35,7 +35,7 @@ public class UserController {
     }
     @PostMapping("/sign-in")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public  ResponseEntity<UserModelRes> signIn(@RequestBody SignInUserModel userModel) {
+    public  ResponseEntity<UserModelRes> signIn(@RequestBody SignInUserModel userModel){
         return ResponseEntity.ok(userService.signIn(userModel));
     }
 }
