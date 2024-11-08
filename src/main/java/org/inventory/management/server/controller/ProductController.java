@@ -2,6 +2,8 @@ package org.inventory.management.server.controller;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.inventory.management.server.model.product.ListProductParams;
+import org.inventory.management.server.model.product.ListProductRes;
 import org.inventory.management.server.model.product.ProductModelRes;
 import org.inventory.management.server.model.product.UpsertProductModel;
 import org.inventory.management.server.service.product.ProductService;
@@ -16,9 +18,17 @@ public class ProductController {
     ResponseEntity<ProductModelRes> getProductById(@PathVariable Long id){
         return ResponseEntity.ok(productService.getProductById(id));
     }
-    @PostMapping
-    ResponseEntity<ProductModelRes> upsertProduct(@Valid @RequestBody UpsertProductModel productModel){
-        return ResponseEntity.ok(productService.upsertProduct(productModel));
+    @PostMapping()
+    ResponseEntity<ProductModelRes> addProduct( @Valid @RequestBody UpsertProductModel productModel){
+        return ResponseEntity.ok(productService.upsertProduct(null, productModel));
+    }
+    @PostMapping("{id}")
+    ResponseEntity<ProductModelRes> upsertProduct(@PathVariable Long id, @Valid @RequestBody UpsertProductModel productModel){
+        return ResponseEntity.ok(productService.upsertProduct(id, productModel));
+    }
+    @PostMapping("/list")
+    ResponseEntity<ListProductRes> getProducts(@Valid @RequestBody ListProductParams params){
+        return ResponseEntity.ok(productService.getProducts(params));
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<ProductModelRes> deleteProduct(@PathVariable Long id) {

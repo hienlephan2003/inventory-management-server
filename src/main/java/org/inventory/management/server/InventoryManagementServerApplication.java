@@ -10,5 +10,4 @@ public class InventoryManagementServerApplication {
         SpringApplication.run(InventoryManagementServerApplication.class, args);
         System.out.println("Inventory Management Server Application Started with http://localhost:8086/swagger-ui/index.html");
     }
-
 }
