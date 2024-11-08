@@ -1,4 +1,4 @@
-package org.inventory.management.server.model.user;
+package org.inventory.management.server.model.employee;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class RegisterUserModel {
     private String username;
     private String password;
-    private String fullname;
+    private String name;
+    private String address;
 }

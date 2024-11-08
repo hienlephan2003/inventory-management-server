@@ -1,6 +1,6 @@
-package org.inventory.management.server.model.user;
+package org.inventory.management.server.model.employee;
 
-import org.inventory.management.server.entity.User;
+import org.inventory.management.server.entity.Employee;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,16 +9,16 @@ import java.util.Collections;
 import java.util.List;
 
 public class UserPrinciple implements UserDetails {
-    String username;
+    String name;
     String password;
     long userId;
     List<GrantedAuthority> authorities;
 
-    public UserPrinciple(User user){
-        this.username = user.getUsername();
-        this.password = user.getPassword();
-        this.userId = user.getId();
-        this.authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()));
+    public UserPrinciple(Employee employee){
+        this.name = employee.getName();
+        this.password = employee.getPassword();
+        this.userId = employee.getId();
+        this.authorities = Collections.singletonList(new SimpleGrantedAuthority(employee.getRole().name()));
     }
 
     @Override
@@ -33,7 +33,7 @@ public class UserPrinciple implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return name;
     }
 
     @Override
