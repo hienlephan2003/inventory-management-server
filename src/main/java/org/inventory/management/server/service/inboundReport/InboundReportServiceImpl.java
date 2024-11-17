@@ -1,35 +1,111 @@
 package org.inventory.management.server.service.inboundReport;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.inventory.management.server.entity.InboundReport;
+import org.inventory.management.server.entity.*;
 import org.inventory.management.server.model.inboundReport.InboundReportModelRes;
 import org.inventory.management.server.model.inboundReport.UpsertInboundReportModel;
-import org.inventory.management.server.repository.InboundReportRepository;
+import org.inventory.management.server.model.inboundReportDetail.UpsertInboundReportDetailModel;
+import org.inventory.management.server.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class InboundReportServiceImpl implements InboundReportService {
-    private final InboundReportRepository InboundReportRepository;
+    private final InboundReportRepository inboundReportRepository;
+    private final InboundReportDetailRepository inboundReportDetailRepository;
+    private final ShipmentRepository shipmentRepository;
+    private final ProductRepository productRepository;
+    private final EmployeeRepository employeeRepository;
     private final ModelMapper modelMapper;
     @Override
     public InboundReportModelRes getInboundReportById(long id) {
-        InboundReport InboundReport = InboundReportRepository.findById(id).orElseThrow(() ->
+        InboundReport InboundReport = inboundReportRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Not found InboundReport with id"+ id));
        return modelMapper.map(InboundReport, InboundReportModelRes.class);
     }
+    private InboundReportDetail createInboundReportDetail(UpsertInboundReportDetailModel item, InboundReport inboundReport) {
+        Product product = productRepository.findById(item.getProductId())
+                .orElseThrow(() -> new EntityNotFoundException("Not found Product with id: " + item.getProductId()));
 
+        InboundReportDetail detail = modelMapper.map(item, InboundReportDetail.class);
+        detail.setProduct(product);
+        detail.setInboundReport(inboundReport);
+
+        BigDecimal subTotal = item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+        detail.setTotalPrice(subTotal);
+        return detail;
+    }
+
+    @Transactional
     @Override
-    public InboundReportModelRes upsertInboundReport(UpsertInboundReportModel inboundReportModel) {
+    public InboundReportModelRes createInboundReport(UpsertInboundReportModel inboundReportModel) {
         InboundReport inboundReport = modelMapper.map(inboundReportModel, InboundReport.class);
-        inboundReport.setId(inboundReportModel.getId());
-        InboundReportRepository.save(inboundReport);
+        Employee employee = employeeRepository.findById(inboundReportModel.getShipment().getEmployeeId()).orElseThrow(() -> new EntityNotFoundException("Not found employee"));
+        Shipment shipmentRequest = (inboundReport.getShipment());
+        shipmentRequest.setPic(employee);
+        Shipment shipment = shipmentRepository.save(shipmentRequest);
+        inboundReport.setShipment(shipment);
+        inboundReport.setItems(new ArrayList<>());
+        InboundReport inboundReportData = inboundReportRepository.save(inboundReport);
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        List<InboundReportDetail> items = inboundReportModel.getItems().stream()
+                .map(item -> createInboundReportDetail(item, inboundReportData))
+                .peek(detail -> {
+                    totalPrice.add(detail.getTotalPrice());
+                })
+                .collect(Collectors.toList());
+        inboundReportData.setItems(items);
+        inboundReportData.setPrice(totalPrice);
+        inboundReportRepository.save(inboundReportData);
+        return modelMapper.map(inboundReportData, InboundReportModelRes.class);
+    }
+    @Override
+    @Transactional
+    public InboundReportModelRes updateInboundReport(long id, UpsertInboundReportModel inboundReportModel) {
+        InboundReport inboundReport = inboundReportRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("InboundReport not found with id " + id));
+
+        modelMapper.map(inboundReportModel, inboundReport);
+
+        if (inboundReportModel.getShipment() != null && inboundReportModel.getShipment().getEmployeeId() != null) {
+            Employee employee = employeeRepository.findById(inboundReportModel.getShipment().getEmployeeId())
+                    .orElseThrow(() -> new EntityNotFoundException("Employee not found with id " + inboundReportModel.getShipment().getEmployeeId()));
+            inboundReport.getShipment().setPic(employee);
+        }
+
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        if (inboundReportModel.getItems() != null && !inboundReportModel.getItems().isEmpty()) {
+            if (inboundReport.getItems() != null) {
+                inboundReportDetailRepository.deleteAll(inboundReport.getItems());
+                inboundReport.getItems().clear();
+            }
+            List<InboundReportDetail> items = inboundReportModel.getItems().stream()
+                    .map(item -> createInboundReportDetail(item, inboundReport))
+                    .peek(detail -> totalPrice.add(detail.getTotalPrice()))
+                    .collect(Collectors.toList());
+            inboundReport.setItems(items);
+        }
+
+        inboundReport.setPrice(totalPrice);
+
+        inboundReportRepository.save(inboundReport);
+
         return modelMapper.map(inboundReport, InboundReportModelRes.class);
     }
 
+
     @Override
     public InboundReportModelRes deleteInboundReport(long id) {
-        return null;
+        InboundReportModelRes inboundReport = getInboundReportById(id);
+        inboundReportRepository.deleteById(id);
+        return inboundReport;
     }
 }
