@@ -14,15 +14,19 @@ import org.springframework.web.bind.annotation.*;
 public class InboundReportController {
     private final InboundReportService inboundReportService;
     @GetMapping("/{id}")
-    ResponseEntity<InboundReportModelRes> getinboundReportById(@PathVariable Long id){
+    ResponseEntity<InboundReportModelRes> getInboundReportById(@PathVariable Long id){
         return ResponseEntity.ok(inboundReportService.getInboundReportById(id));
     }
     @PostMapping
-    ResponseEntity<InboundReportModelRes> upsertinboundReport(@Valid @RequestBody UpsertInboundReportModel inboundReportModel){
-        return ResponseEntity.ok(inboundReportService.upsertInboundReport(inboundReportModel));
+    ResponseEntity<InboundReportModelRes> createInboundReport(@Valid @RequestBody UpsertInboundReportModel inboundReportModel){
+        return ResponseEntity.ok(inboundReportService.createInboundReport(inboundReportModel));
+    }
+    @PutMapping("/{id}")
+    ResponseEntity<InboundReportModelRes> updateInboundReport(@PathVariable Long id, @Valid @RequestBody UpsertInboundReportModel inboundReportModel){
+        return ResponseEntity.ok(inboundReportService.updateInboundReport(id, inboundReportModel));
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<InboundReportModelRes> deleteinboundReport(@PathVariable Long id) {
+    public ResponseEntity<InboundReportModelRes> deleteInboundReport(@PathVariable Long id) {
         return ResponseEntity.ok(inboundReportService.deleteInboundReport(id));
     }
 }

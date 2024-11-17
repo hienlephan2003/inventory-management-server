@@ -9,7 +9,6 @@ import org.inventory.management.server.model.enumeratiion.ShipmentType;
 import java.util.Date;
 @Data
 public class UpsertShipmentModel {
-    private Long id;
     private ShipmentType type;
     private Date date;
     private String carrier;

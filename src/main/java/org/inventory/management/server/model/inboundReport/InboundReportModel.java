@@ -4,12 +4,11 @@ import lombok.Data;
 import org.inventory.management.server.model.inboundReportDetail.UpsertInboundReportDetailModel;
 import org.inventory.management.server.model.shipment.UpsertShipmentModel;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 @Data
-public class UpsertInboundReportModel {
+public class InboundReportModel {
     private Date date;
     private int quantity;
     private UpsertShipmentModel shipment;

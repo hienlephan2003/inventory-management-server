@@ -5,6 +5,7 @@ import org.inventory.management.server.model.inboundReport.UpsertInboundReportMo
 
 public interface InboundReportService {
     InboundReportModelRes getInboundReportById(long id) ;
-    InboundReportModelRes upsertInboundReport(UpsertInboundReportModel InboundReportModel);
+    InboundReportModelRes updateInboundReport(long id, UpsertInboundReportModel InboundReportModel);
+    InboundReportModelRes createInboundReport(UpsertInboundReportModel InboundReportModel);
     InboundReportModelRes deleteInboundReport(long id);
 }

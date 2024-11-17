@@ -22,8 +22,8 @@ public class ProductController {
     ResponseEntity<ProductModelRes> addProduct( @Valid @RequestBody UpsertProductModel productModel){
         return ResponseEntity.ok(productService.upsertProduct(null, productModel));
     }
-    @PostMapping("{id}")
-    ResponseEntity<ProductModelRes> upsertProduct(@PathVariable Long id, @Valid @RequestBody UpsertProductModel productModel){
+    @PutMapping("/{id}")
+    ResponseEntity<ProductModelRes> updateProduct(@PathVariable Long id, @Valid @RequestBody UpsertProductModel productModel){
         return ResponseEntity.ok(productService.upsertProduct(id, productModel));
     }
     @PostMapping("/list")
