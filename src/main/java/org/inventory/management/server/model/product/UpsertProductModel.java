@@ -11,6 +11,7 @@ import org.inventory.management.server.entity.Tag;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -29,4 +30,5 @@ public class UpsertProductModel {
     private int maxQuantity;
     private long categoryId;
     private long companyId;
+    private List<Long> tagIds;
 }

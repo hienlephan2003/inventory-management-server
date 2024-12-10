@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 @Data
@@ -28,4 +29,6 @@ public class OutboundReportDetail {
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
+    @OneToMany(mappedBy = "outboundReportDetail", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<OutboundLineItem> inbounds;
 }

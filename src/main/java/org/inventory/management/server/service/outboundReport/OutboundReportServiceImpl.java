@@ -45,7 +45,8 @@ public class OutboundReportServiceImpl implements OutboundReportService {
         BigDecimal subTotal = item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
         detail.setTotalPrice(subTotal);
         stockReportDetailService.onOutboundReport(detail);
-        inboundReportService.updateStockQuantity(detail);
+        List<OutboundLineItem> inbounds =  inboundReportService.updateStockQuantity(detail);
+        detail.setInbounds(inbounds);
         return detail;
     }
 

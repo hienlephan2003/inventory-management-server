@@ -30,6 +30,10 @@ public class ProductController {
     ResponseEntity<ListProductRes> getProducts(@Valid @RequestBody ListQueryParam params){
         return ResponseEntity.ok(productService.getProducts(params));
     }
+    @GetMapping("/all")
+    ResponseEntity<ListProductRes> getAllProducts(){
+        return ResponseEntity.ok(productService.getAllProducts());
+    }
     @DeleteMapping("/{id}")
     public ResponseEntity<ProductModelRes> deleteProduct(@PathVariable Long id) {
         return ResponseEntity.ok(productService.deleteProduct(id));

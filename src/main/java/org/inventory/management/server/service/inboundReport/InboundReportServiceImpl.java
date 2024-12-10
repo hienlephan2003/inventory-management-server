@@ -136,9 +136,9 @@ public class InboundReportServiceImpl implements InboundReportService {
 
     @Override
     @Transactional
-    public List<InboundReportDetailModelRes> updateStockQuantity(OutboundReportDetail outboundReportDetail) {
+    public List<OutboundLineItem> updateStockQuantity(OutboundReportDetail outboundReportDetail) {
         AtomicInteger quantity = new AtomicInteger(outboundReportDetail.getQuantity());
-
+        List<OutboundLineItem> inbounds = new ArrayList<>();
         List<InboundReportDetail> inboundReportDetails = inboundReportDetailRepository.findByProductAndExpirationDateAfterAndStockQuantityGreaterThanOrderByExpirationDateAsc(
                 outboundReportDetail.getProduct(),
                 new Date(),
@@ -147,20 +147,28 @@ public class InboundReportServiceImpl implements InboundReportService {
         List<InboundReportDetailModelRes> updatedDetails = new ArrayList<>();
 
         for (InboundReportDetail item : inboundReportDetails) {
+            OutboundLineItem outboundLineItem = OutboundLineItem
+                    .builder()
+                    .inboundReportDetail(item)
+                    .outboundReportDetail(outboundReportDetail)
+                    .build();
             int currentStock = item.getStockQuantity();
             if (currentStock <= quantity.get()) {
                 quantity.addAndGet(-currentStock);
+                outboundLineItem.setQuantity(currentStock);
                 item.setStockQuantity(0);
             } else {
+                outboundLineItem.setQuantity(quantity.get());
                 item.setStockQuantity(currentStock - quantity.get());
                 quantity.set(0);
                 break;
             }
+            inbounds.add(outboundLineItem);
             updatedDetails.add(modelMapper.map(inboundReportDetailRepository.save(item), InboundReportDetailModelRes.class));
         }
         if(quantity.get() > 0){
             throw  new IllegalArgumentException("Not enough stock for outbound report detail with product id" + outboundReportDetail.getProduct().getId());
         }
-        return updatedDetails;
+        return inbounds;
     }
 }

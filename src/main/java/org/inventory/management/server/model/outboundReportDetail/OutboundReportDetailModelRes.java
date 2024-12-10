@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.inventory.management.server.entity.OutboundReport;
 import org.inventory.management.server.entity.Product;
+import org.inventory.management.server.model.outboundLineItem.OutboundLineItemModelRes;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class OutboundReportDetailModelRes {
@@ -16,4 +18,5 @@ public class OutboundReportDetailModelRes {
     private BigDecimal unitPrice;
     private Product product;
     private boolean isExpired;
+    private List<OutboundLineItemModelRes> inbounds;
 }

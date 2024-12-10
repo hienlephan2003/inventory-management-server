@@ -12,4 +12,5 @@ public interface ProductService {
     ProductModelRes upsertProduct(Long id, UpsertProductModel productModel);
     ProductModelRes deleteProduct(long id);
     ListProductRes getProducts(ListQueryParam params);
+    ListProductRes getAllProducts();
 }

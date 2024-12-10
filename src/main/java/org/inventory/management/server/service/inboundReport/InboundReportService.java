@@ -1,5 +1,6 @@
 package org.inventory.management.server.service.inboundReport;
 
+import org.inventory.management.server.entity.OutboundLineItem;
 import org.inventory.management.server.entity.OutboundReportDetail;
 import org.inventory.management.server.model.inboundReport.CreateInboundReportModel;
 import org.inventory.management.server.model.inboundReport.InboundReportModelRes;
@@ -9,9 +10,13 @@ import org.inventory.management.server.model.inboundReportDetail.InboundReportDe
 import java.util.List;
 
 public interface InboundReportService {
-    InboundReportModelRes getInboundReportById(long id) ;
+    InboundReportModelRes getInboundReportById(long id);
+
     InboundReportModelRes updateInboundReport(long id, UpdateInboundReportModel InboundReportModel);
+
     InboundReportModelRes createInboundReport(CreateInboundReportModel InboundReportModel);
+
     InboundReportModelRes deleteInboundReport(long id);
-    List<InboundReportDetailModelRes> updateStockQuantity(OutboundReportDetail outboundReportDetail);
+
+    List<OutboundLineItem> updateStockQuantity(OutboundReportDetail outboundReportDetail);
 }
