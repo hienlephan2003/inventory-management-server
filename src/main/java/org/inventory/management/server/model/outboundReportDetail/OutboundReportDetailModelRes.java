@@ -1,21 +1,19 @@
-package org.inventory.management.server.model.inboundReportDetail;
+package org.inventory.management.server.model.outboundReportDetail;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.inventory.management.server.entity.InboundReport;
+import org.inventory.management.server.entity.OutboundReport;
 import org.inventory.management.server.entity.Product;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
-public class InboundReportDetailModelRes {
+public class OutboundReportDetailModelRes {
     private Long id;
     private int quantity;
-    private Date expirationDate;
     private BigDecimal totalPrice;
     private BigDecimal unitPrice;
-    private Date manufactoringDate;
-    private int stockQuantity;
     private Product product;
+    private boolean isExpired;
 }

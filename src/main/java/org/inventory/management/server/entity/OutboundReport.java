@@ -27,5 +27,4 @@ public class OutboundReport {
     private Shipment shipment;
     @OneToMany(mappedBy = "outboundReport", cascade = CascadeType.ALL)
     private List<OutboundReportDetail> items;
-
 }

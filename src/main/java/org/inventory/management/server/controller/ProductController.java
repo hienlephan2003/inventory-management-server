@@ -2,10 +2,10 @@ package org.inventory.management.server.controller;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.inventory.management.server.model.product.ListProductParams;
 import org.inventory.management.server.model.product.ListProductRes;
 import org.inventory.management.server.model.product.ProductModelRes;
 import org.inventory.management.server.model.product.UpsertProductModel;
+import org.inventory.management.server.model.query.ListQueryParam;
 import org.inventory.management.server.service.product.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +27,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.upsertProduct(id, productModel));
     }
     @PostMapping("/list")
-    ResponseEntity<ListProductRes> getProducts(@Valid @RequestBody ListProductParams params){
+    ResponseEntity<ListProductRes> getProducts(@Valid @RequestBody ListQueryParam params){
         return ResponseEntity.ok(productService.getProducts(params));
     }
     @DeleteMapping("/{id}")

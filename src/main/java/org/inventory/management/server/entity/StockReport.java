@@ -9,7 +9,7 @@ import org.inventory.management.server.model.enumeratiion.CalendarType;
 
 import java.util.Date;
 import java.util.List;
-
+//stock report nay la moi thang mot lan
 @Data
 @Builder
 @NoArgsConstructor
@@ -22,5 +22,4 @@ public class StockReport {
     private Date date;
     @OneToMany(mappedBy = "stockReport", cascade = CascadeType.ALL)
     private List<StockReportDetail> items;
-
 }

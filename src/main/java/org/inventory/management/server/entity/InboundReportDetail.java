@@ -23,6 +23,7 @@ public class InboundReportDetail {
     @JoinColumn(name = "inbound_report_id")
     private InboundReport inboundReport;
     private int quantity;
+    private int stockQuantity;
     private BigDecimal totalPrice;
     private BigDecimal unitPrice;
     private Date manufactoringDate;

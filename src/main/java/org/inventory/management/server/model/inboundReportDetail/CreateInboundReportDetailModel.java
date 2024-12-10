@@ -7,7 +7,7 @@ import java.util.Date;
 
 
 @Data
-public class UpsertInboundReportDetailModel {
+public class CreateInboundReportDetailModel {
     private int quantity;
     private BigDecimal unitPrice;
     private Date manufactoringDate;

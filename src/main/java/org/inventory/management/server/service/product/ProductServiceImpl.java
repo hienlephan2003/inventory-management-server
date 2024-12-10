@@ -5,10 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.inventory.management.server.entity.Category;
 import org.inventory.management.server.entity.Company;
 import org.inventory.management.server.entity.Product;
-import org.inventory.management.server.model.product.ListProductParams;
 import org.inventory.management.server.model.product.ListProductRes;
 import org.inventory.management.server.model.product.ProductModelRes;
 import org.inventory.management.server.model.product.UpsertProductModel;
+import org.inventory.management.server.model.query.ListQueryParam;
 import org.inventory.management.server.repository.CategoryRepository;
 import org.inventory.management.server.repository.CompanyRepository;
 import org.inventory.management.server.repository.ProductRepository;
@@ -61,7 +61,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ListProductRes getProducts(ListProductParams params) {
+    public ListProductRes getProducts(ListQueryParam params) {
         Pageable paging = PageRequest.of(params.getPageNumber(), params.getPageSize());
         String query = params.getQuery();
         Page<Product> pagedResult;

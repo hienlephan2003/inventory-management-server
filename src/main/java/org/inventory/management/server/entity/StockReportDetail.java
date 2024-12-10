@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 @Data
 @Builder
@@ -22,5 +23,8 @@ public class StockReportDetail {
     @ManyToOne
     @JoinColumn(name = "stock_report_id")
     private StockReport stockReport;
-
+    private int quantity;
+    private int outboundQuantity;
+    private int expiredQuantity;
+    private Date createdDate;
 }

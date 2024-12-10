@@ -4,16 +4,23 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.inventory.management.server.entity.*;
+import org.inventory.management.server.model.inboundReport.CreateInboundReportModel;
 import org.inventory.management.server.model.inboundReport.InboundReportModelRes;
-import org.inventory.management.server.model.inboundReport.UpsertInboundReportModel;
-import org.inventory.management.server.model.inboundReportDetail.UpsertInboundReportDetailModel;
+import org.inventory.management.server.model.inboundReport.UpdateInboundReportModel;
+import org.inventory.management.server.model.inboundReportDetail.CreateInboundReportDetailModel;
+import org.inventory.management.server.model.inboundReportDetail.InboundReportDetailModelRes;
+import org.inventory.management.server.model.inboundReportDetail.UpdateInboundReportDetailModel;
 import org.inventory.management.server.repository.*;
+import org.inventory.management.server.service.stockDetail.StockReportDetailService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,28 +32,46 @@ public class InboundReportServiceImpl implements InboundReportService {
     private final ProductRepository productRepository;
     private final EmployeeRepository employeeRepository;
     private final ModelMapper modelMapper;
+    private final StockReportDetailService stockReportDetailService;
     @Override
     public InboundReportModelRes getInboundReportById(long id) {
         InboundReport InboundReport = inboundReportRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Not found InboundReport with id"+ id));
        return modelMapper.map(InboundReport, InboundReportModelRes.class);
     }
-    private InboundReportDetail createInboundReportDetail(UpsertInboundReportDetailModel item, InboundReport inboundReport) {
+    private InboundReportDetail createInboundReportDetail(CreateInboundReportDetailModel item, InboundReport inboundReport) {
         Product product = productRepository.findById(item.getProductId())
                 .orElseThrow(() -> new EntityNotFoundException("Not found Product with id: " + item.getProductId()));
 
         InboundReportDetail detail = modelMapper.map(item, InboundReportDetail.class);
         detail.setProduct(product);
+        detail.setStockQuantity(item.getQuantity());
         detail.setInboundReport(inboundReport);
-
+        stockReportDetailService.onInboundReport(detail);
         BigDecimal subTotal = item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
         detail.setTotalPrice(subTotal);
         return detail;
     }
+    private InboundReportDetail updateInboundReportDetail(UpdateInboundReportDetailModel item, InboundReport inboundReport)  {
+        InboundReportDetail detail = modelMapper.map(item, InboundReportDetail.class);
+        int outboundQuantity = detail.getQuantity() - detail.getStockQuantity();
+        if(outboundQuantity < item.getQuantity()){
+            throw new IllegalArgumentException( "Can not update inbound report detail");
+        }
+        detail.setUnitPrice(item.getUnitPrice());
+        detail.setQuantity(item.getQuantity());
+        detail.setStockQuantity(item.getQuantity() - outboundQuantity);
+        detail.setStockQuantity(item.getQuantity());
+        detail.setInboundReport(inboundReport);
+        stockReportDetailService.onInboundReport(detail);
+        BigDecimal subTotal = item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+        detail.setTotalPrice(subTotal);
+        return inboundReportDetailRepository.save(detail);
+    }
 
     @Transactional
     @Override
-    public InboundReportModelRes createInboundReport(UpsertInboundReportModel inboundReportModel) {
+    public InboundReportModelRes createInboundReport(CreateInboundReportModel inboundReportModel) {
         InboundReport inboundReport = modelMapper.map(inboundReportModel, InboundReport.class);
         Employee employee = employeeRepository.findById(inboundReportModel.getShipment().getEmployeeId()).orElseThrow(() -> new EntityNotFoundException("Not found employee"));
         Shipment shipmentRequest = (inboundReport.getShipment());
@@ -69,7 +94,7 @@ public class InboundReportServiceImpl implements InboundReportService {
     }
     @Override
     @Transactional
-    public InboundReportModelRes updateInboundReport(long id, UpsertInboundReportModel inboundReportModel) {
+    public InboundReportModelRes updateInboundReport(long id, UpdateInboundReportModel inboundReportModel) {
         InboundReport inboundReport = inboundReportRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("InboundReport not found with id " + id));
 
@@ -83,15 +108,12 @@ public class InboundReportServiceImpl implements InboundReportService {
 
         BigDecimal totalPrice = BigDecimal.ZERO;
         if (inboundReportModel.getItems() != null && !inboundReportModel.getItems().isEmpty()) {
-            if (inboundReport.getItems() != null) {
-                inboundReportDetailRepository.deleteAll(inboundReport.getItems());
-                inboundReport.getItems().clear();
-            }
             List<InboundReportDetail> items = inboundReportModel.getItems().stream()
-                    .map(item -> createInboundReportDetail(item, inboundReport))
+                    .map(item -> {
+                        return updateInboundReportDetail(item, inboundReport);
+                    })
                     .peek(detail -> totalPrice.add(detail.getTotalPrice()))
                     .collect(Collectors.toList());
-            inboundReport.setItems(items);
         }
 
         inboundReport.setPrice(totalPrice);
@@ -103,9 +125,42 @@ public class InboundReportServiceImpl implements InboundReportService {
 
 
     @Override
-    public InboundReportModelRes deleteInboundReport(long id) {
+    public InboundReportModelRes deleteInboundReport(long id)  {
         InboundReportModelRes inboundReport = getInboundReportById(id);
-        inboundReportRepository.deleteById(id);
-        return inboundReport;
+        if(inboundReport.getItems().isEmpty()){
+            inboundReportRepository.deleteById(id);
+            return inboundReport;
+        }
+            throw new IllegalArgumentException("Can not delete outbound report, contains inbound report details");
+    }
+
+    @Override
+    @Transactional
+    public List<InboundReportDetailModelRes> updateStockQuantity(OutboundReportDetail outboundReportDetail) {
+        AtomicInteger quantity = new AtomicInteger(outboundReportDetail.getQuantity());
+
+        List<InboundReportDetail> inboundReportDetails = inboundReportDetailRepository.findByProductAndExpirationDateAfterAndStockQuantityGreaterThanOrderByExpirationDateAsc(
+                outboundReportDetail.getProduct(),
+                new Date(),
+                0
+        );
+        List<InboundReportDetailModelRes> updatedDetails = new ArrayList<>();
+
+        for (InboundReportDetail item : inboundReportDetails) {
+            int currentStock = item.getStockQuantity();
+            if (currentStock <= quantity.get()) {
+                quantity.addAndGet(-currentStock);
+                item.setStockQuantity(0);
+            } else {
+                item.setStockQuantity(currentStock - quantity.get());
+                quantity.set(0);
+                break;
+            }
+            updatedDetails.add(modelMapper.map(inboundReportDetailRepository.save(item), InboundReportDetailModelRes.class));
+        }
+        if(quantity.get() > 0){
+            throw  new IllegalArgumentException("Not enough stock for outbound report detail with product id" + outboundReportDetail.getProduct().getId());
+        }
+        return updatedDetails;
     }
 }
