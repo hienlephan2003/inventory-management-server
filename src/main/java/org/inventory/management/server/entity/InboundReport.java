@@ -1,16 +1,15 @@
 package org.inventory.management.server.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-@Data
+@Setter
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,6 +24,6 @@ public class InboundReport {
     @ManyToOne
     @JoinColumn(name = "shipment_id")
     private Shipment shipment;
-    @OneToMany(mappedBy = "inboundReport", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "inboundReport", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<InboundReportDetail> items;
 }

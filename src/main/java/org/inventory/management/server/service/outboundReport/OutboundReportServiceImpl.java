@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.inventory.management.server.entity.*;
+import org.inventory.management.server.model.enumeratiion.ShipmentType;
 import org.inventory.management.server.model.outboundReport.OutboundReportModelRes;
 import org.inventory.management.server.model.outboundReport.UpsertOutboundReportModel;
 import org.inventory.management.server.model.outboundReportDetail.UpsertOutboundReportDetailModel;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +31,8 @@ public class OutboundReportServiceImpl implements OutboundReportService {
     private final ModelMapper modelMapper;
     private final StockReportDetailService stockReportDetailService;
     private final InboundReportService inboundReportService;
+    private final StockReportDetailRepository stockReportDetailRepository;
+
     @Override
     public OutboundReportModelRes getOutboundReportById(long id) {
         OutboundReport OutboundReport = outboundReportRepository.findById(id).orElseThrow(() ->
@@ -44,10 +48,11 @@ public class OutboundReportServiceImpl implements OutboundReportService {
         detail.setOutboundReport(outboundReport);
         BigDecimal subTotal = item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
         detail.setTotalPrice(subTotal);
-        stockReportDetailService.onOutboundReport(detail);
-        List<OutboundLineItem> inbounds =  inboundReportService.updateStockQuantity(detail);
+        OutboundReportDetail detailData = outboundReportDetailRepository.save(detail);
+        stockReportDetailService.onOutboundReport(detailData);
+        List<OutboundLineItem> inbounds =  inboundReportService.updateStockQuantity(detailData);
         detail.setInbounds(inbounds);
-        return detail;
+        return detailData;
     }
 
     @Transactional
@@ -56,20 +61,21 @@ public class OutboundReportServiceImpl implements OutboundReportService {
         OutboundReport outboundReport = modelMapper.map(outboundReportModel, OutboundReport.class);
         Employee employee = employeeRepository.findById(outboundReportModel.getShipment().getEmployeeId()).orElseThrow(() -> new EntityNotFoundException("Not found employee"));
         Shipment shipmentRequest = (outboundReport.getShipment());
+        shipmentRequest.setType(ShipmentType.OUTBOUND);
         shipmentRequest.setPic(employee);
         Shipment shipment = shipmentRepository.save(shipmentRequest);
         outboundReport.setShipment(shipment);
         outboundReport.setItems(new ArrayList<>());
         OutboundReport outboundReportData = outboundReportRepository.save(outboundReport);
-        BigDecimal totalPrice = BigDecimal.ZERO;
+        AtomicReference<BigDecimal> totalPrice = new AtomicReference<>(BigDecimal.ZERO);
         List<OutboundReportDetail> items = outboundReportModel.getItems().stream()
                 .map(item -> createOutboundReportDetail(item, outboundReportData))
                 .peek(detail -> {
-                    totalPrice.add(detail.getTotalPrice());
+                    totalPrice.updateAndGet(v -> v.add(detail.getTotalPrice()));
                 })
                 .collect(Collectors.toList());
         outboundReportData.setItems(items);
-        outboundReportData.setTotalPrice(totalPrice);
+        outboundReportData.setTotalPrice(totalPrice.get());
         outboundReportRepository.save(outboundReportData);
         return modelMapper.map(outboundReportData, OutboundReportModelRes.class);
     }
@@ -87,7 +93,7 @@ public class OutboundReportServiceImpl implements OutboundReportService {
             outboundReport.getShipment().setPic(employee);
         }
 
-        BigDecimal totalPrice = BigDecimal.ZERO;
+        AtomicReference<BigDecimal> totalPrice = new AtomicReference<>(BigDecimal.ZERO);
         if (outboundReportModel.getItems() != null && !outboundReportModel.getItems().isEmpty()) {
             if (outboundReport.getItems() != null) {
                 outboundReportDetailRepository.deleteAll(outboundReport.getItems());
@@ -95,12 +101,14 @@ public class OutboundReportServiceImpl implements OutboundReportService {
             }
             List<OutboundReportDetail> items = outboundReportModel.getItems().stream()
                     .map(item -> createOutboundReportDetail(item, outboundReport))
-                    .peek(detail -> totalPrice.add(detail.getTotalPrice()))
+                    .peek(detail ->
+                            totalPrice.updateAndGet(v -> v.add(detail.getTotalPrice()))
+                        )
                     .collect(Collectors.toList());
             outboundReport.setItems(items);
         }
 
-        outboundReport.setTotalPrice(totalPrice);
+        outboundReport.setTotalPrice(totalPrice.get());
 
         outboundReportRepository.save(outboundReport);
 

@@ -1,16 +1,13 @@
 package org.inventory.management.server.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-
-@Data
+@Setter
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,7 +23,7 @@ public class OutboundReportDetail {
     private BigDecimal totalPrice;
     private BigDecimal unitPrice;
     private boolean isExpired;
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "product_id")
     private Product product;
     @OneToMany(mappedBy = "outboundReportDetail", cascade = CascadeType.PERSIST, orphanRemoval = true)

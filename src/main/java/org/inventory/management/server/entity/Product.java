@@ -1,15 +1,13 @@
 package org.inventory.management.server.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
-@Data
+@Getter
+@Setter
 @Entity
 @Builder
 @AllArgsConstructor

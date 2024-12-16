@@ -67,10 +67,9 @@ public class SecurityConfig {
                 registry.addMapping("/**")
                         .allowedOrigins(clientUrl)
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("token", "Content-Type", "Accept") // Include necessary headers
+                            .allowedHeaders("token", "Content-Type", "Accept") // Include necessary headers
                         .allowCredentials(true);
             }
         };
     }
-
 }

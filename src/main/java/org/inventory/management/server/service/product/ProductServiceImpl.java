@@ -59,8 +59,8 @@ public class ProductServiceImpl implements ProductService {
                         .orElseThrow(() -> new IllegalArgumentException("Not found tag with id " + item)))
                 .collect(Collectors.toSet());
         product.setTags(tags);
-        productRepository.save(product);
-        return modelMapper.map(product, ProductModelRes.class);
+        tags.forEach(tag -> tag.getProducts().add(product));
+        return modelMapper.map(productRepository.save(product), ProductModelRes.class);
     }
 
     @Override

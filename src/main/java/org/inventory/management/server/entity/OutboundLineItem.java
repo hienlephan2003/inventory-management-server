@@ -18,12 +18,12 @@ public class OutboundLineItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "outbound_report_detail_id")
     private OutboundReportDetail outboundReportDetail;
     private int quantity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inbound_report_detail_id")
     private InboundReportDetail inboundReportDetail;
 }

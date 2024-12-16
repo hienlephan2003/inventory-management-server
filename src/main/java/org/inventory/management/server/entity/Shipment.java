@@ -25,7 +25,7 @@ public class Shipment {
     private Date date;
     private String carrier;
     @Enumerated(EnumType.STRING)
-    private ShipmentStatus status;
+    private ShipmentStatus status = ShipmentStatus.PENDING;
     @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee pic;

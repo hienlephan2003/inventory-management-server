@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.inventory.management.server.entity.*;
+import org.inventory.management.server.model.enumeratiion.ShipmentType;
 import org.inventory.management.server.model.inboundReport.CreateInboundReportModel;
 import org.inventory.management.server.model.inboundReport.InboundReportModelRes;
 import org.inventory.management.server.model.inboundReport.UpdateInboundReportModel;
@@ -19,8 +20,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +34,7 @@ public class InboundReportServiceImpl implements InboundReportService {
     private final EmployeeRepository employeeRepository;
     private final ModelMapper modelMapper;
     private final StockReportDetailService stockReportDetailService;
+    private final OutboundLineItemRepository outboundLineItemRepository;
     @Override
     public InboundReportModelRes getInboundReportById(long id) {
         InboundReport InboundReport = inboundReportRepository.findById(id).orElseThrow(() ->
@@ -75,20 +77,24 @@ public class InboundReportServiceImpl implements InboundReportService {
         InboundReport inboundReport = modelMapper.map(inboundReportModel, InboundReport.class);
         Employee employee = employeeRepository.findById(inboundReportModel.getShipment().getEmployeeId()).orElseThrow(() -> new EntityNotFoundException("Not found employee"));
         Shipment shipmentRequest = (inboundReport.getShipment());
+        shipmentRequest.setType(ShipmentType.INBOUND);
         shipmentRequest.setPic(employee);
         Shipment shipment = shipmentRepository.save(shipmentRequest);
         inboundReport.setShipment(shipment);
         inboundReport.setItems(new ArrayList<>());
         InboundReport inboundReportData = inboundReportRepository.save(inboundReport);
-        BigDecimal totalPrice = BigDecimal.ZERO;
+        AtomicReference<BigDecimal> totalPrice = new AtomicReference<>(BigDecimal.ZERO);
+        AtomicInteger quantity = new AtomicInteger();
         List<InboundReportDetail> items = inboundReportModel.getItems().stream()
                 .map(item -> createInboundReportDetail(item, inboundReportData))
                 .peek(detail -> {
-                    totalPrice.add(detail.getTotalPrice());
+                    totalPrice.updateAndGet(v -> v.add(detail.getTotalPrice()));
+                     quantity.set(quantity.get() + detail.getQuantity());
                 })
                 .collect(Collectors.toList());
         inboundReportData.setItems(items);
-        inboundReportData.setPrice(totalPrice);
+        inboundReportData.setPrice(totalPrice.get());
+        inboundReportData.setQuantity(quantity.get());
         inboundReportRepository.save(inboundReportData);
         return modelMapper.map(inboundReportData, InboundReportModelRes.class);
     }
@@ -149,21 +155,26 @@ public class InboundReportServiceImpl implements InboundReportService {
         for (InboundReportDetail item : inboundReportDetails) {
             OutboundLineItem outboundLineItem = OutboundLineItem
                     .builder()
-                    .inboundReportDetail(item)
-                    .outboundReportDetail(outboundReportDetail)
                     .build();
-            int currentStock = item.getStockQuantity();
+           int currentStock = item.getStockQuantity();
             if (currentStock <= quantity.get()) {
                 quantity.addAndGet(-currentStock);
                 outboundLineItem.setQuantity(currentStock);
                 item.setStockQuantity(0);
+                inbounds.add(outboundLineItem);
+                outboundLineItem.setInboundReportDetail(item);
+                outboundLineItem.setOutboundReportDetail(outboundReportDetail);
+                outboundLineItemRepository.save(outboundLineItem);
             } else {
                 outboundLineItem.setQuantity(quantity.get());
                 item.setStockQuantity(currentStock - quantity.get());
                 quantity.set(0);
+                inbounds.add(outboundLineItem);
+                outboundLineItem.setInboundReportDetail(item);
+                outboundLineItem.setOutboundReportDetail(outboundReportDetail);
+                outboundLineItemRepository.save(outboundLineItem);
                 break;
             }
-            inbounds.add(outboundLineItem);
             updatedDetails.add(modelMapper.map(inboundReportDetailRepository.save(item), InboundReportDetailModelRes.class));
         }
         if(quantity.get() > 0){

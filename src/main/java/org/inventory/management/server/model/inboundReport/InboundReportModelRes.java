@@ -15,6 +15,7 @@ public class InboundReportModelRes {
     private Long id;
     private Date date;
     private int quantity;
+    private BigDecimal price;
     private Shipment shipment;
     private List<InboundReportDetailModelRes> items;
 }
