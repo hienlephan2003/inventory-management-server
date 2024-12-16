@@ -83,7 +83,8 @@ public class ProductServiceImpl implements ProductService {
             pagedResult = productRepository.findAll(paging);
         }
         ListProductRes listProductRes = new ListProductRes();
-        listProductRes.setProductList(pagedResult.getContent());
+        List<ProductModelRes> productModelRes = pagedResult.getContent().stream().map(item -> modelMapper.map(item, ProductModelRes.class)).toList();
+        listProductRes.setProductList(productModelRes);
         listProductRes.setTotal(pagedResult.getContent().size());
         return listProductRes;
     }
@@ -91,7 +92,8 @@ public class ProductServiceImpl implements ProductService {
     public ListProductRes getAllProducts() {
            List<Product> products = productRepository.findAll();
         ListProductRes listProductRes = new ListProductRes();
-        listProductRes.setProductList(products);
+        List<ProductModelRes> productModelRes = products.stream().map(item -> modelMapper.map(item, ProductModelRes.class)).toList();
+        listProductRes.setProductList(productModelRes);
         listProductRes.setTotal(products.size());
         return listProductRes;
     }

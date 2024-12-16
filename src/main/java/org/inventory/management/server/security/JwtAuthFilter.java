@@ -27,6 +27,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("token");
         String token = null;
         String username = null;
+        if (request.getRequestURI().startsWith("/api/auth/")) {
+            filterChain.doFilter(request, response); // Skip JWT authentication
+            return;
+        }
+
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             username = authService.extractUsername(token);

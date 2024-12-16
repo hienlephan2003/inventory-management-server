@@ -7,6 +7,6 @@ import java.util.List;
 
 @Data
 public class ListProductRes {
-    private List<Product> productList;
+    private List<ProductModelRes> productList;
     private int total;
 }

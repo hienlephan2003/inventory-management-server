@@ -35,13 +35,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
                     authorizationManagerRequestMatcherRegistry
                             .requestMatchers("/api/auth/*").permitAll()
                             .requestMatchers("/v3/api-docs/**", "/v3/api-docs.yaml","/swagger-ui/**", "/swagger-ui.html").permitAll()
                             .anyRequest().authenticated();
-                }).csrf(AbstractHttpConfigurer::disable);
+                })
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
     @Bean
@@ -65,10 +66,9 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins(clientUrl)
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                             .allowedHeaders("token", "Content-Type", "Accept") // Include necessary headers
-                        .allowCredentials(true);
+                        .allowCredentials(false);
             }
         };
     }
