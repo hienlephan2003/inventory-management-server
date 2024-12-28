@@ -1,9 +1,12 @@
 spring:
   datasource:
     url: jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?prepareThreshold=0
-    username: postgres.zqindmcmmrlhtovgitkd
-    password: ${PASSWORD}
+#    url: jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?prepareThreshold=0
+#    username: postgres.zqindmcmmrlhtovgitkd
+#    password: ${PASSWORD}
     driver-class-name: org.postgresql.Driver
+    username: postgres.cqirosmdibxuffvchjcg
+    password: YlDaiSdn78QxrLOb
   jpa:
     hibernate:
       ddl-auto: none

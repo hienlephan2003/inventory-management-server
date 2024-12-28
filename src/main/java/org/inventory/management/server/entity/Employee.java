@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.inventory.management.server.model.enumeratiion.Role;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,6 +26,8 @@ public class Employee {
     private String password;
     private String phone;
     private String address;
+    private String position;
+    private Date createdTime = new Date();
     @ManyToMany()
     @JoinTable(
             name = "calendar_PIC",

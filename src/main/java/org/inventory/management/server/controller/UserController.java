@@ -3,6 +3,7 @@ package org.inventory.management.server.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.inventory.management.server.entity.Employee;
+import org.inventory.management.server.model.employee.EmployeeRequestModel;
 import org.inventory.management.server.model.employee.RegisterUserModel;
 import org.inventory.management.server.model.employee.SignInEmployeeModel;
 import org.inventory.management.server.model.employee.EmployeeModelRes;
@@ -20,6 +21,10 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Employee> getUserByUserId(@PathVariable Long id){
+        return ResponseEntity.ok(userService.findById(id));
+    }
+    @PostMapping("profile/{id}")
+    public ResponseEntity<Employee> updateUserProfile(@PathVariable Long id, @RequestBody EmployeeRequestModel profile){
         return ResponseEntity.ok(userService.findById(id));
     }
     @PostMapping("/sign-up")

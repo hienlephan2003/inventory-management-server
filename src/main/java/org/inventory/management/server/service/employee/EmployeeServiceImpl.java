@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.inventory.management.server.entity.Employee;
 import org.inventory.management.server.exception.DataNotFoundException;
 import org.inventory.management.server.exception.UserExistException;
+import org.inventory.management.server.model.employee.EmployeeRequestModel;
 import org.inventory.management.server.model.employee.RegisterUserModel;
 import org.inventory.management.server.model.enumeratiion.Role;
 import org.inventory.management.server.model.employee.SignInEmployeeModel;
@@ -68,6 +69,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee findById(Long userId) {
         return employeeRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Not found user"));
+    }
+
+    @Override
+    public Employee updateProfile(Long userId, EmployeeRequestModel profile) {
+        Employee employee  = findById(userId);
+        modelMapper.map(profile, employee);
+        return employeeRepository.save(employee);
     }
 }
 

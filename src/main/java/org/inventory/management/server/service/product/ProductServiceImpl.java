@@ -2,28 +2,20 @@ package org.inventory.management.server.service.product;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.inventory.management.server.entity.Category;
-import org.inventory.management.server.entity.Company;
-import org.inventory.management.server.entity.Product;
-import org.inventory.management.server.entity.Tag;
+import org.inventory.management.server.entity.*;
+import org.inventory.management.server.model.inboundReportDetail.InboundReportDetailModelRes;
 import org.inventory.management.server.model.product.ListProductRes;
 import org.inventory.management.server.model.product.ProductModelRes;
 import org.inventory.management.server.model.product.UpsertProductModel;
 import org.inventory.management.server.model.query.ListQueryParam;
-import org.inventory.management.server.repository.CategoryRepository;
-import org.inventory.management.server.repository.CompanyRepository;
-import org.inventory.management.server.repository.ProductRepository;
-import org.inventory.management.server.repository.TagRepository;
+import org.inventory.management.server.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,12 +25,20 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final CompanyRepository companyRepository;
+    private final InboundReportDetailRepository inboundReportDetailRepository;
     private final ModelMapper modelMapper;
     @Override
     public ProductModelRes getProductById(long id) {
         Product product = productRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Not found product with id"+ id));
-       return modelMapper.map(product, ProductModelRes.class);
+        List<InboundReportDetail> items = inboundReportDetailRepository.findByProductAndExpirationDateAfterAndStockQuantityGreaterThanOrderByExpirationDateAsc(
+                product,
+                new Date(),
+                0
+        );
+       ProductModelRes res = modelMapper.map(product, ProductModelRes.class);
+       res.setItems(items.stream().map(item -> modelMapper.map(item, InboundReportDetailModelRes.class)).toList());
+       return res;
     }
 
     @Override

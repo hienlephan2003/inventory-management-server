@@ -15,8 +15,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -121,5 +122,30 @@ public class OutboundReportServiceImpl implements OutboundReportService {
         OutboundReportModelRes outboundReport = getOutboundReportById(id);
         outboundReportRepository.deleteById(id);
         return outboundReport;
+    }
+
+    @Override
+    public Map<String, Integer> getCurrentWeekQuantitiesByDate() {
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(java.time.DayOfWeek.MONDAY);
+        LocalDate endOfWeek = today.with(java.time.DayOfWeek.SUNDAY);
+
+        Date startDate = Date.from(startOfWeek.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date endDate = Date.from(endOfWeek.atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant());
+
+        List<OutboundReport> reports = outboundReportRepository.findAllByDateBetween(startDate, endDate);
+
+        Map<String, Integer> quantitiesByDate = new HashMap<>();
+        for (LocalDate date = startOfWeek; !date.isAfter(endOfWeek); date = date.plusDays(1)) {
+            String dayOfWeek = date.getDayOfWeek().toString();
+            quantitiesByDate.put(dayOfWeek, 0);
+        }
+
+        for (OutboundReport report : reports) {
+            LocalDate reportDate = report.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            String dayOfWeek = reportDate.getDayOfWeek().toString();
+            quantitiesByDate.put(dayOfWeek, quantitiesByDate.getOrDefault(dayOfWeek, 0) + report.getQuantity());
+        }
+        return quantitiesByDate;
     }
 }
