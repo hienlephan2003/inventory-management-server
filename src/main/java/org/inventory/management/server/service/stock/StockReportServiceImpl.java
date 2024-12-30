@@ -33,19 +33,28 @@ public class StockReportServiceImpl implements StockReportService {
     public Map<String, Double> getCategoryPercentages() {
         List<StockReportDetail> stockDetails = getStockReportOfMonth().getItems();
 
-        Map<String, Integer> categoryTotals = new HashMap<>();
-        int totalProducts = stockDetails.size();
+        Map<String, Double> categoryTotals = new HashMap<>();
+        double totalQuantity = 0;
 
+        // Calculate total quantity of all products
         for (StockReportDetail detail : stockDetails) {
-            Category category = detail.getProduct().getCategory(); // Assuming Product has a getCategory method
-            categoryTotals.put(category.getName(), categoryTotals.getOrDefault(category.getName(), 0) + 1);
+            totalQuantity += detail.getQuantity();
         }
 
-        return categoryTotals.entrySet().stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        entry -> (entry.getValue() * 100.0) / totalProducts
-                ));
+        // Calculate quantity per category
+        for (StockReportDetail detail : stockDetails) {
+            Category category = detail.getProduct().getCategory(); // Assuming Product has a getCategory method
+            double currentCategoryQuantity = categoryTotals.getOrDefault(category.getName(), 0.0);
+            categoryTotals.put(category.getName(), currentCategoryQuantity + detail.getQuantity());
+        }
+
+        // Calculate the percentage for each category
+        for (Map.Entry<String, Double> entry : categoryTotals.entrySet()) {
+            double percentage = (entry.getValue() * 100.0) / totalQuantity;
+            categoryTotals.put(entry.getKey(), percentage);
+        }
+
+        return categoryTotals;
     }
 
 }
