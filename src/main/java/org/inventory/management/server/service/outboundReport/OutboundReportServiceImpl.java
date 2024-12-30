@@ -5,6 +5,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.inventory.management.server.entity.*;
 import org.inventory.management.server.model.enumeratiion.ShipmentType;
+import org.inventory.management.server.model.inboundReport.InboundReportModelRes;
+import org.inventory.management.server.model.inboundReport.ListDataRes;
 import org.inventory.management.server.model.outboundReport.OutboundReportModelRes;
 import org.inventory.management.server.model.outboundReport.UpsertOutboundReportModel;
 import org.inventory.management.server.model.outboundReportDetail.UpsertOutboundReportDetailModel;
@@ -18,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -33,6 +36,15 @@ public class OutboundReportServiceImpl implements OutboundReportService {
     private final StockReportDetailService stockReportDetailService;
     private final InboundReportService inboundReportService;
     private final StockReportDetailRepository stockReportDetailRepository;
+
+    @Override
+    public ListDataRes<OutboundReportModelRes> getOutboundReports() {
+        List<OutboundReport> items = outboundReportRepository.findAll();
+        ListDataRes<OutboundReportModelRes> res = new ListDataRes<>();
+        res.setData(items.stream().map(item -> modelMapper.map(item, OutboundReportModelRes.class)).toList());
+        res.setTotal(items.toArray().length);
+        return res;
+    }
 
     @Override
     public OutboundReportModelRes getOutboundReportById(long id) {
@@ -69,14 +81,19 @@ public class OutboundReportServiceImpl implements OutboundReportService {
         outboundReport.setItems(new ArrayList<>());
         OutboundReport outboundReportData = outboundReportRepository.save(outboundReport);
         AtomicReference<BigDecimal> totalPrice = new AtomicReference<>(BigDecimal.ZERO);
+        AtomicInteger quantity = new AtomicInteger();
+
         List<OutboundReportDetail> items = outboundReportModel.getItems().stream()
                 .map(item -> createOutboundReportDetail(item, outboundReportData))
                 .peek(detail -> {
                     totalPrice.updateAndGet(v -> v.add(detail.getTotalPrice()));
+                    quantity.set(quantity.get() + detail.getQuantity());
+
                 })
                 .collect(Collectors.toList());
         outboundReportData.setItems(items);
         outboundReportData.setTotalPrice(totalPrice.get());
+        outboundReportData.setQuantity(quantity.get());
         outboundReportRepository.save(outboundReportData);
         return modelMapper.map(outboundReportData, OutboundReportModelRes.class);
     }

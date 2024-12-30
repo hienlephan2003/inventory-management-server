@@ -2,6 +2,8 @@ package org.inventory.management.server.controller;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.inventory.management.server.model.inboundReport.InboundReportModelRes;
+import org.inventory.management.server.model.inboundReport.ListDataRes;
 import org.inventory.management.server.model.outboundReport.OutboundReportModelRes;
 import org.inventory.management.server.model.outboundReport.UpsertOutboundReportModel;
 import org.inventory.management.server.service.outboundReport.OutboundReportService;
@@ -17,6 +19,11 @@ public class OutboundReportController {
     ResponseEntity<OutboundReportModelRes> getOutboundReportById(@PathVariable Long id){
         return ResponseEntity.ok(outboundReportService.getOutboundReportById(id));
     }
+    @GetMapping("")
+    ResponseEntity<ListDataRes<OutboundReportModelRes>> getInboundReports(){
+        return ResponseEntity.ok(outboundReportService.getOutboundReports());
+    }
+
     @PostMapping
     ResponseEntity<OutboundReportModelRes> createOutboundReport(@Valid @RequestBody UpsertOutboundReportModel outboundReportModel){
         return ResponseEntity.ok(outboundReportService.createOutboundReport(outboundReportModel));

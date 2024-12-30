@@ -11,7 +11,6 @@ import java.util.List;
 @Data
 public class UpsertOutboundReportModel {
     private Date date;
-    private int quantity;
     private UpsertInboundReportShipmentModel shipment;
     private List<UpsertOutboundReportDetailModel> items;
 }

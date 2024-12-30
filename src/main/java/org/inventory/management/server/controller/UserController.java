@@ -3,13 +3,11 @@ package org.inventory.management.server.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.inventory.management.server.entity.Employee;
-import org.inventory.management.server.model.employee.EmployeeRequestModel;
-import org.inventory.management.server.model.employee.RegisterUserModel;
-import org.inventory.management.server.model.employee.SignInEmployeeModel;
-import org.inventory.management.server.model.employee.EmployeeModelRes;
+import org.inventory.management.server.model.employee.*;
 import org.inventory.management.server.service.employee.EmployeeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -19,9 +17,10 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final EmployeeService userService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Employee> getUserByUserId(@PathVariable Long id){
-        return ResponseEntity.ok(userService.findById(id));
+    @GetMapping("")
+    public ResponseEntity<Employee> getUserByUserId(){
+        Long userId = ((UserPrinciple)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+        return ResponseEntity.ok(userService.findById(userId));
     }
     @PostMapping("profile/{id}")
     public ResponseEntity<Employee> updateUserProfile(@PathVariable Long id, @RequestBody EmployeeRequestModel profile){
