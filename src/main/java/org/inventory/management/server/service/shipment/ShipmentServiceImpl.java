@@ -36,7 +36,8 @@ public class ShipmentServiceImpl implements  ShipmentService {
     public ShipmentModelRes updateShipment(Long shipmentId, UpsertShipmentModel shipmentModel) {
         Shipment shipment = shipmentRepository.findById(shipmentId)
                 .orElseThrow( () -> new EntityNotFoundException("Not found shipment with id " + shipmentId));
-        mapper.map(shipment, shipmentModel);
+        shipment.setStatus(shipmentModel.getStatus());
+        shipment.setCompletedDate(shipmentModel.getCompletedDate());
         Shipment shipmentData = shipmentRepository.save(shipment);
         return mapper.map(shipmentData, ShipmentModelRes.class);
     }
