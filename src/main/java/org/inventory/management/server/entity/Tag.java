@@ -28,4 +28,7 @@ public class Tag {
             inverseJoinColumns = @JoinColumn(name = "product_id")
     )
     private Set<Product> products = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "area_id")
+    private Area area;
 }

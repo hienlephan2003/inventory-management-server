@@ -23,6 +23,9 @@ public class Shipment {
     @Enumerated(EnumType.STRING)
     private ShipmentType type;
     private Date date;
+    private Date completedDate;
+    private String fromPosition;
+    private String toPosition;
     private String carrier;
     @Enumerated(EnumType.STRING)
     private ShipmentStatus status = ShipmentStatus.PENDING;

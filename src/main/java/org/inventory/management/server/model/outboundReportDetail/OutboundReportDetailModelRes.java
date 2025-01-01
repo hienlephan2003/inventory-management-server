@@ -5,6 +5,7 @@ import lombok.Data;
 import org.inventory.management.server.entity.OutboundReport;
 import org.inventory.management.server.entity.Product;
 import org.inventory.management.server.model.outboundLineItem.OutboundLineItemModelRes;
+import org.inventory.management.server.model.product.ProductModelRes;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -16,7 +17,7 @@ public class OutboundReportDetailModelRes {
     private int quantity;
     private BigDecimal totalPrice;
     private BigDecimal unitPrice;
-    private Product product;
+    private ProductModelRes product;
     private boolean isExpired;
     private List<OutboundLineItemModelRes> inbounds;
 }

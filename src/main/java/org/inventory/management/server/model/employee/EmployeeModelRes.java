@@ -22,4 +22,7 @@ public class EmployeeModelRes {
     private String address;
     private String phone;
     private String name;
+    private String department;
+    private String avatar;
+    private Date dob;
 }

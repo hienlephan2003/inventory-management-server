@@ -27,6 +27,9 @@ public class Employee {
     private String phone;
     private String address;
     private String position;
+    private String department;
+    private String avatar;
+    private Date dob;
     private Date createdTime = new Date();
     @ManyToMany()
     @JoinTable(

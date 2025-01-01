@@ -10,6 +10,7 @@ import java.util.Optional;
 public interface ProductService {
     ProductModelRes getProductById(long id) ;
     ProductModelRes upsertProduct(Long id, UpsertProductModel productModel);
+    ProductModelRes updateProduct(Long id, UpsertProductModel productModel);
     ProductModelRes deleteProduct(long id);
     ListProductRes getProducts(ListQueryParam params);
     ListProductRes getAllProducts();

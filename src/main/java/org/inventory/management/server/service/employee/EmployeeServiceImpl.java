@@ -72,10 +72,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Employee updateProfile(Long userId, EmployeeRequestModel profile) {
+    public EmployeeModelRes updateProfile(Long userId, EmployeeRequestModel profile) {
         Employee employee  = findById(userId);
         modelMapper.map(profile, employee);
-        return employeeRepository.save(employee);
+        return modelMapper.map(employeeRepository.save(employee), EmployeeModelRes.class);
     }
 }
 

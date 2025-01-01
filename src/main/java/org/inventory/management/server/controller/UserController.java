@@ -22,9 +22,11 @@ public class UserController {
         Long userId = ((UserPrinciple)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
         return ResponseEntity.ok(userService.findById(userId));
     }
-    @PostMapping("profile/{id}")
-    public ResponseEntity<Employee> updateUserProfile(@PathVariable Long id, @RequestBody EmployeeRequestModel profile){
-        return ResponseEntity.ok(userService.findById(id));
+    @PostMapping("profile")
+    public ResponseEntity<EmployeeModelRes> updateUserProfile(@RequestBody EmployeeRequestModel profile){
+        Long userId = ((UserPrinciple)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+
+        return ResponseEntity.ok(userService.updateProfile(userId, profile));
     }
     @PostMapping("/sign-up")
     @ResponseStatus(HttpStatus.CREATED)

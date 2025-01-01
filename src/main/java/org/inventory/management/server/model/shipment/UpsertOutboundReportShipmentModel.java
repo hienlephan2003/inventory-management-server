@@ -9,4 +9,6 @@ public class UpsertOutboundReportShipmentModel {
     private Date date;
     private String carrier;
     private Long employeeId;
+    private String fromPosition;
+    private String toPosition;
 }

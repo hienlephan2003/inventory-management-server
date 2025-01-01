@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface StockReportRepository extends JpaRepository<StockReport, Long> {
-    Optional<StockReport> findFirstByOrderByDateAsc();
+    Optional<StockReport> findFirstByOrderByDateDesc();
 
 
 }

@@ -11,6 +11,9 @@ public class ShipmentModelRes {
     private int Id;
     private ShipmentType type;
     private Date date;
+    private Date completedDate;
+    private String fromPosition;
+    private String toPosition;
     private String carrier;
     private ShipmentStatus status;
     private Long employeeId;

@@ -18,7 +18,7 @@ public class StockReportServiceImpl implements StockReportService {
     private final ModelMapper mapper;
     @Override
     public StockReport getStockReportOfMonth() {
-      Optional<StockReport> stockReport = stockReportRepository.findFirstByOrderByDateAsc();
+      Optional<StockReport> stockReport = stockReportRepository.findFirstByOrderByDateDesc();
       if(stockReport.isPresent() && stockReport.get().getDate().getMonth() == new Date().getMonth()
               && stockReport.get().getDate().getYear() == new Date().getYear()) {
           return stockReport.get();

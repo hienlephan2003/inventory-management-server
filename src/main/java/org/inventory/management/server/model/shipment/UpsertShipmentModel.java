@@ -15,4 +15,7 @@ public class UpsertShipmentModel {
     private String carrier;
     private ShipmentStatus status;
     private Long employeeId;
+    private String fromPosition;
+    private String toPosition;
+    private Date completedDate;
 }

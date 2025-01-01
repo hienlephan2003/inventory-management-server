@@ -31,4 +31,5 @@ public class UpsertProductModel {
     private long categoryId;
     private long companyId;
     private List<Long> tagIds;
+    private String description;
 }

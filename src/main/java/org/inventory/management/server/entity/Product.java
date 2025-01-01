@@ -24,6 +24,7 @@ public class Product {
     private String image;
     private int minQuantity;
     private int maxQuantity;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;

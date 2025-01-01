@@ -7,10 +7,11 @@ import java.util.Date;
 
 @Data
 public class EmployeeRequestModel {
-    private String username;
     private String position;
-    private Date createdTime = new Date();
     private String address;
     private String phone;
     private String name;
+    private String department;
+    private String avatar;
+    private Date dob;
 }

@@ -27,6 +27,7 @@ public class ProductServiceImpl implements ProductService {
     private final CompanyRepository companyRepository;
     private final InboundReportDetailRepository inboundReportDetailRepository;
     private final ModelMapper modelMapper;
+    private final StockReportDetailRepository stockReportDetailRepository;
     @Override
     public ProductModelRes getProductById(long id) {
         Product product = productRepository.findById(id).orElseThrow(() ->
@@ -62,6 +63,35 @@ public class ProductServiceImpl implements ProductService {
         tags.forEach(tag -> tag.getProducts().add(product));
         return modelMapper.map(productRepository.save(product), ProductModelRes.class);
     }
+    @Override
+    public ProductModelRes updateProduct(Long id, UpsertProductModel productModel) {
+        Product existingProduct = productRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Not found product with id"+ id));
+        Product product = modelMapper.map(productModel, Product.class);
+        if(id != null) {
+            product.setId(id);
+        }
+        Category category = categoryRepository.findById(productModel.getCategoryId())
+                .orElseThrow(() -> new EntityNotFoundException("Not found category with id"+ productModel.getCategoryId()));
+        Company company = companyRepository.findById(productModel.getCompanyId())
+                .orElseThrow(() -> new EntityNotFoundException("Not found company with id"+ productModel.getCompanyId()));
+        product.setCategory(category);
+        product.setCompany(company);
+        Set<Tag> tags = productModel.getTagIds()
+                .stream()
+                .map(item -> tagRepository.findById(item)
+                        .orElseThrow(() -> new IllegalArgumentException("Not found tag with id " + item)))
+                .collect(Collectors.toSet());
+        Set<Tag> existingTags = existingProduct.getTags() != null ? existingProduct.getTags() : new HashSet<>();
+        tags.forEach(tag -> {
+            if (!existingTags.contains(tag)) {
+                existingTags.add(tag);
+                tag.getProducts().add(product);
+            }
+        });
+        product.setTags(existingTags);
+        return modelMapper.map(productRepository.save(product), ProductModelRes.class);
+    }
 
     @Override
     public ProductModelRes deleteProduct(long id) {
@@ -86,6 +116,7 @@ public class ProductServiceImpl implements ProductService {
         List<ProductModelRes> productModelRes = pagedResult.getContent().stream().map(item -> modelMapper.map(item, ProductModelRes.class)).toList();
         listProductRes.setProductList(productModelRes);
         listProductRes.setTotal(pagedResult.getContent().size());
+
         return listProductRes;
     }
     @Override
