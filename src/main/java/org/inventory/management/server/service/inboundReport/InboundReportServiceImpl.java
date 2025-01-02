@@ -60,6 +60,7 @@ public class InboundReportServiceImpl implements InboundReportService {
         detail.setProduct(product);
         detail.setStockQuantity(item.getQuantity());
         detail.setInboundReport(inboundReport);
+        detail.setCreatedDate(inboundReport.getDate());
         product.setQuantity(product.getQuantity() + item.getQuantity());
         stockReportDetailService.onInboundReport(detail);
         BigDecimal subTotal = item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()));

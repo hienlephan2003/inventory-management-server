@@ -13,5 +13,4 @@ public class StatisticModelRes {
     private String stockPercentChange;
     private String inboundPercentChange;
     private String inboundNeededPercentChange;
-
 }
