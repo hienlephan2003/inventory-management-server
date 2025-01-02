@@ -3,6 +3,7 @@ package org.inventory.management.server.service.employee;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.inventory.management.server.entity.Employee;
+import org.inventory.management.server.entity.Product;
 import org.inventory.management.server.exception.DataNotFoundException;
 import org.inventory.management.server.exception.UserExistException;
 import org.inventory.management.server.model.employee.*;
@@ -34,7 +35,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public List<EmployeeModelRes> getEmployees() {
         List<Employee> employees = employeeRepository.findAll();
-        return employees.stream().map(item -> modelMapper.map(item, EmployeeModelRes.class)).toList();
+        List<Employee> filteredEmployees = employees.stream()
+                .filter(product -> product.getRole() == Role.EMPLOYEE_ROLE)
+                .toList();
+        return filteredEmployees.stream().map(item -> modelMapper.map(item, EmployeeModelRes.class)).toList();
     }
 
     @Override
@@ -103,7 +107,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeModelRes updateProfile(Long userId, EmployeeRequestModel profile) {
         Employee employee  = findById(userId);
+        String password = employee.getPassword();
         modelMapper.map(profile, employee);
+        employee.setPassword(password);
+        return modelMapper.map(employeeRepository.save(employee), EmployeeModelRes.class);
+    }
+    @Override
+    public EmployeeModelRes updateProfileAndPassword(Long userId, EmployeeRequestModel profile) {
+        Employee employee  = findById(userId);
+        modelMapper.map(profile, employee);
+        employee.setPassword(passwordEncoder.encode(profile.getPassword()));
         return modelMapper.map(employeeRepository.save(employee), EmployeeModelRes.class);
     }
 }

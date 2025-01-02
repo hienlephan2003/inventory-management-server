@@ -14,4 +14,5 @@ public class EmployeeRequestModel {
     private String department;
     private String avatar;
     private Date dob;
+    private String password;
 }

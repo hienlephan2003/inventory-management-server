@@ -30,4 +30,8 @@ public class EmployeeController {
     public ResponseEntity<EmployeeModelRes> updateEmployee(@PathVariable Long id,@RequestBody EmployeeRequestModel model){
         return ResponseEntity.ok(employeeService.updateProfile(id, model));
     }
+    @PutMapping("/password/{id}")
+    public ResponseEntity<EmployeeModelRes> updateEmployeeWithPassword(@PathVariable Long id,@RequestBody EmployeeRequestModel model){
+        return ResponseEntity.ok(employeeService.updateProfileAndPassword(id, model));
+    }
 }

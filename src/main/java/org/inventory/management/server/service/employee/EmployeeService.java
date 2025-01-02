@@ -16,5 +16,6 @@ public interface EmployeeService {
     Employee getUserByUsername(String username) throws DataNotFoundException;
     Employee findById(Long userId);
     EmployeeModelRes updateProfile(Long userId, EmployeeRequestModel profile);
+    EmployeeModelRes updateProfileAndPassword(Long userId, EmployeeRequestModel profile);
 }
 

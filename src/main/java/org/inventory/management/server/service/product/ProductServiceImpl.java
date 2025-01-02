@@ -60,6 +60,7 @@ public class ProductServiceImpl implements ProductService {
                         .orElseThrow(() -> new IllegalArgumentException("Not found tag with id " + item)))
                 .collect(Collectors.toSet());
         product.setTags(tags);
+        product.setQuantity(0);
         tags.forEach(tag -> tag.getProducts().add(product));
         return modelMapper.map(productRepository.save(product), ProductModelRes.class);
     }
@@ -97,8 +98,8 @@ public class ProductServiceImpl implements ProductService {
     public ProductModelRes deleteProduct(long id) {
         Product product = productRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Not found product with id"+ id));
-        productRepository.delete(product);
-        return modelMapper.map(product, ProductModelRes.class);
+        product.setIsDeleted(true);
+        return modelMapper.map(productRepository.save(product), ProductModelRes.class);
     }
 
     @Override
@@ -121,7 +122,7 @@ public class ProductServiceImpl implements ProductService {
     }
     @Override
     public ListProductRes getAllProducts() {
-           List<Product> products = productRepository.findAll();
+           List<Product> products = productRepository.findByIsDeletedIsNullOrIsDeletedFalse();
         ListProductRes listProductRes = new ListProductRes();
         List<ProductModelRes> productModelRes = products.stream().map(item -> modelMapper.map(item, ProductModelRes.class)).toList();
         listProductRes.setProductList(productModelRes);
@@ -131,7 +132,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ListProductRes getNeedInboundProducts() {
-        List<Product> products = productRepository.findAll();
+        List<Product> products = productRepository.findByIsDeletedIsNullOrIsDeletedFalse();
         ListProductRes listProductRes = new ListProductRes();
         List<Product> filteredProducts = products.stream()
                 .filter(product -> product.getQuantity() < product.getMinQuantity())
