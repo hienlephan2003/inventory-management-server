@@ -55,7 +55,7 @@ public class TagServiceImpl implements  TagService{
     public TagModelRes deleteTag(long id) {
        Tag tag = tagRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Not found tags"));
-        tag.setDeleted(true);
+        tag.setIsDeleted(true);
         return modelMapper.map(tagRepository.save(tag),TagModelRes.class );
     }
 

@@ -19,7 +19,7 @@ public class InboundReport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Date date;
-    private int quantity;
+    private Integer quantity;
     private BigDecimal price;
     @ManyToOne
     @JoinColumn(name = "shipment_id")

@@ -21,7 +21,7 @@ public class OutboundLineItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "outbound_report_detail_id")
     private OutboundReportDetail outboundReportDetail;
-    private int quantity;
+    private Integer quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inbound_report_detail_id")

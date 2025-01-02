@@ -14,10 +14,6 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 public class ProductController {
     private final ProductService productService;
-    @GetMapping("/{id}")
-    ResponseEntity<ProductModelRes> getProductById(@PathVariable Long id){
-        return ResponseEntity.ok(productService.getProductById(id));
-    }
     @PostMapping()
     ResponseEntity<ProductModelRes> addProduct( @Valid @RequestBody UpsertProductModel productModel){
         return ResponseEntity.ok(productService.upsertProduct(null, productModel));
@@ -33,6 +29,14 @@ public class ProductController {
     @GetMapping("/all")
     ResponseEntity<ListProductRes> getAllProducts(){
         return ResponseEntity.ok(productService.getAllProducts());
+    }
+    @GetMapping("/needInbound")
+    ResponseEntity<ListProductRes> getNeedInboundProducts(){
+        return ResponseEntity.ok(productService.getNeedInboundProducts());
+    }
+    @GetMapping("/{id}")
+    ResponseEntity<ProductModelRes> getProductById(@PathVariable Long id){
+        return ResponseEntity.ok(productService.getProductById(id));
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<ProductModelRes> deleteProduct(@PathVariable Long id) {

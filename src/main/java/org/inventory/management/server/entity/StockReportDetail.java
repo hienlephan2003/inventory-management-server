@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 @Data
@@ -23,8 +24,11 @@ public class StockReportDetail {
     @ManyToOne
     @JoinColumn(name = "stock_report_id")
     private StockReport stockReport;
-    private int quantity;
-    private int outboundQuantity;
-    private int expiredQuantity;
+    private Integer inboundQuantity;
+    private Integer outboundQuantity;
+    private Integer stockQuantity;
+    private BigDecimal inboundPrice;
+    private BigDecimal outboundPrice;
     private Date createdDate;
+    private Integer needInboundQuantity;
 }

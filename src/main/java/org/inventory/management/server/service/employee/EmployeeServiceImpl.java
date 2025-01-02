@@ -5,11 +5,9 @@ import lombok.AllArgsConstructor;
 import org.inventory.management.server.entity.Employee;
 import org.inventory.management.server.exception.DataNotFoundException;
 import org.inventory.management.server.exception.UserExistException;
-import org.inventory.management.server.model.employee.EmployeeRequestModel;
-import org.inventory.management.server.model.employee.RegisterUserModel;
+import org.inventory.management.server.model.employee.*;
 import org.inventory.management.server.model.enumeratiion.Role;
-import org.inventory.management.server.model.employee.SignInEmployeeModel;
-import org.inventory.management.server.model.employee.EmployeeModelRes;
+import org.inventory.management.server.model.product.ProductModelRes;
 import org.inventory.management.server.repository.EmployeeRepository;
 import org.inventory.management.server.service.auth.AuthService;
 import org.modelmapper.ModelMapper;
@@ -20,6 +18,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.List;
+
 
 @Service
 @AllArgsConstructor
@@ -29,6 +30,34 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final ModelMapper modelMapper;
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
+
+    @Override
+    public List<EmployeeModelRes> getEmployees() {
+        List<Employee> employees = employeeRepository.findAll();
+        return employees.stream().map(item -> modelMapper.map(item, EmployeeModelRes.class)).toList();
+    }
+
+    @Override
+    public EmployeeModelRes createNewEmployee(CreateEmployeeRequestModel createUserRequest) throws UserExistException {
+        if (!employeeRepository.existsUserByUsername(createUserRequest.getUsername())) {
+            Employee newEmployee = Employee.builder()
+                    .name(createUserRequest.getName())
+                    .username(createUserRequest.getUsername())
+                    .password(passwordEncoder.encode(createUserRequest.getPassword()))
+                    .address(createUserRequest.getAddress())
+                    .role(Role.EMPLOYEE_ROLE)
+                    .dob(createUserRequest.getDob())
+                    .createdTime(new Date())
+                    .avatar(createUserRequest.getAvatar())
+                    .department(createUserRequest.getDepartment())
+                    .position(createUserRequest.getPosition())
+                    .build();
+            Employee employee = employeeRepository.save(newEmployee);
+            return modelMapper.map(employee, EmployeeModelRes.class);
+        } else{
+            throw new UserExistException("User exists!");
+        }
+    }
 
     @Override
     public EmployeeModelRes createNewUser(RegisterUserModel createUserRequest) throws UserExistException {

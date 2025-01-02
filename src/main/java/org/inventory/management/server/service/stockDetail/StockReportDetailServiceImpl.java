@@ -22,16 +22,16 @@ public class StockReportDetailServiceImpl implements StockReportDetailService {
     private final StockReportService stockReportService;
 
     private StockReportDetail upsertStockReportDetailOfMonth(Product product) {
-        StockReport stockReport = stockReportService.getStockReportOfMonth();
+        StockReport stockReport = stockReportService.getStockReportOfThisMonth();
         Optional<StockReportDetail> lastStockReport = stockReportDetailRepository.findFirstByProductOrderByCreatedDate(product);
         if(lastStockReport.isEmpty()){
 
             StockReportDetail stockReportDetail = StockReportDetail.builder()
                     .stockReport(stockReport)
                     .createdDate(new Date())
-                    .expiredQuantity(0)
+//                    .expiredQuantity(0)
                     .outboundQuantity(0)
-                    .quantity(0)
+//                    .quantity(0)
                     .product(product)
                     .build();
             return stockReportDetailRepository.save(stockReportDetail);
@@ -41,9 +41,9 @@ public class StockReportDetailServiceImpl implements StockReportDetailService {
             StockReportDetail stockReportDetail = StockReportDetail.builder()
                     .stockReport(stockReport)
                     .createdDate(new Date())
-                    .expiredQuantity(0)
+//                    .expiredQuantity(0)
                     .outboundQuantity(0)
-                    .quantity(lastStockReportDetail.getQuantity())
+//                    .quantity(lastStockReportDetail.getQuantity())
                     .product(product)
                     .build();
             return stockReportDetailRepository.save(stockReportDetail);
@@ -72,30 +72,32 @@ public class StockReportDetailServiceImpl implements StockReportDetailService {
     @Transactional
     @Override
     public StockReportDetail onInboundReport(InboundReportDetail inboundReportDetail) {
-        StockReportDetail stockReportDetail = getStockReportDetailOfMonth(inboundReportDetail.getProduct().getId());
-        int currentQuantity = stockReportDetail.getQuantity();
-        stockReportDetail.setQuantity(currentQuantity + inboundReportDetail.getQuantity());
-        return stockReportDetailRepository.save(stockReportDetail);
+//        StockReportDetail stockReportDetail = getStockReportDetailOfMonth(inboundReportDetail.getProduct().getId());
+//        int currentQuantity = stockReportDetail.getQuantity();
+//        stockReportDetail.setQuantity(currentQuantity + inboundReportDetail.getQuantity());
+//        return stockReportDetailRepository.save(stockReportDetail);
+        return null;
     }
     @Transactional
     @Override
     public StockReportDetail onOutboundReport(OutboundReportDetail outboundReportDetail) {
-        StockReportDetail stockReportDetail = getStockReportDetailOfMonth(outboundReportDetail.getProduct().getId());
-        if(outboundReportDetail.isExpired()){
-            stockReportDetail.setExpiredQuantity(stockReportDetail.getExpiredQuantity() + outboundReportDetail.getQuantity());
-            if(stockReportDetail.getQuantity() - outboundReportDetail.getQuantity() < 0){
-                throw new IllegalArgumentException("Not enough stock for this outbound for product with id" + outboundReportDetail.getProduct().getId());
-            }
-            stockReportDetail.setQuantity(stockReportDetail.getQuantity() - outboundReportDetail.getQuantity());
-            return stockReportDetailRepository.save(stockReportDetail);
-        }
-        else{
-            stockReportDetail.setOutboundQuantity(stockReportDetail.getOutboundQuantity() + outboundReportDetail.getQuantity());
-            if(stockReportDetail.getQuantity() - outboundReportDetail.getQuantity() < 0){
-                throw new IllegalArgumentException("Not enough stock for this outbound for product with id" + outboundReportDetail.getProduct().getId());
-            }
-            stockReportDetail.setQuantity(stockReportDetail.getQuantity() - outboundReportDetail.getQuantity());
-            return stockReportDetailRepository.save(stockReportDetail);
-        }
+        return  null;
+//        StockReportDetail stockReportDetail = getStockReportDetailOfMonth(outboundReportDetail.getProduct().getId());
+//        if(outboundReportDetail.getIsExpired()){
+//            stockReportDetail.setExpiredQuantity(stockReportDetail.getExpiredQuantity() + outboundReportDetail.getQuantity());
+//            if(stockReportDetail.getQuantity() - outboundReportDetail.getQuantity() < 0){
+//                throw new IllegalArgumentException("Not enough stock for this outbound for product with id" + outboundReportDetail.getProduct().getId());
+//            }
+//            stockReportDetail.setQuantity(stockReportDetail.getQuantity() - outboundReportDetail.getQuantity());
+//            return stockReportDetailRepository.save(stockReportDetail);
+//        }
+//        else{
+//            stockReportDetail.setOutboundQuantity(stockReportDetail.getOutboundQuantity() + outboundReportDetail.getQuantity());
+//            if(stockReportDetail.getQuantity() - outboundReportDetail.getQuantity() < 0){
+//                throw new IllegalArgumentException("Not enough stock for this outbound for product with id" + outboundReportDetail.getProduct().getId());
+//            }
+//            stockReportDetail.setQuantity(stockReportDetail.getQuantity() - outboundReportDetail.getQuantity());
+//            return stockReportDetailRepository.save(stockReportDetail);
+//        }
     }
 }

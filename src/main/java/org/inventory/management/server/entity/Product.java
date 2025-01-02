@@ -22,9 +22,10 @@ public class Product {
     private BigDecimal marketPrice;
     private BigDecimal productionCost;
     private String image;
-    private int minQuantity;
-    private int maxQuantity;
-
+    private Integer minQuantity;
+    private Integer maxQuantity;
+    private Integer quantity;
+    private Boolean isDeleted;
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;

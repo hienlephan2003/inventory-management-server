@@ -55,9 +55,13 @@ public class OutboundReportServiceImpl implements OutboundReportService {
     private OutboundReportDetail createOutboundReportDetail(UpsertOutboundReportDetailModel item, OutboundReport outboundReport) {
         Product product = productRepository.findById(item.getProductId())
                 .orElseThrow(() -> new EntityNotFoundException("Not found Product with id: " + item.getProductId()));
+        if(product.getQuantity() - item.getQuantity() < 0){
+            throw new IllegalArgumentException("Not enough stock for this outbound for product with id" + product.getId());
+        }
 
         OutboundReportDetail detail = modelMapper.map(item, OutboundReportDetail.class);
         detail.setProduct(product);
+        product.setQuantity(product.getQuantity() - item.getQuantity());
         detail.setOutboundReport(outboundReport);
         BigDecimal subTotal = item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
         detail.setTotalPrice(subTotal);
@@ -82,13 +86,11 @@ public class OutboundReportServiceImpl implements OutboundReportService {
         OutboundReport outboundReportData = outboundReportRepository.save(outboundReport);
         AtomicReference<BigDecimal> totalPrice = new AtomicReference<>(BigDecimal.ZERO);
         AtomicInteger quantity = new AtomicInteger();
-
         List<OutboundReportDetail> items = outboundReportModel.getItems().stream()
                 .map(item -> createOutboundReportDetail(item, outboundReportData))
                 .peek(detail -> {
                     totalPrice.updateAndGet(v -> v.add(detail.getTotalPrice()));
                     quantity.set(quantity.get() + detail.getQuantity());
-
                 })
                 .collect(Collectors.toList());
         outboundReportData.setItems(items);

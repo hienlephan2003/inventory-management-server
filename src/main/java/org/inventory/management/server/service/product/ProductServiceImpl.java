@@ -128,4 +128,19 @@ public class ProductServiceImpl implements ProductService {
         listProductRes.setTotal(products.size());
         return listProductRes;
     }
+
+    @Override
+    public ListProductRes getNeedInboundProducts() {
+        List<Product> products = productRepository.findAll();
+        ListProductRes listProductRes = new ListProductRes();
+        List<Product> filteredProducts = products.stream()
+                .filter(product -> product.getQuantity() < product.getMinQuantity())
+                .toList();
+        List<ProductModelRes> productModelRes = filteredProducts.stream()
+                .map(item -> modelMapper.map(item, ProductModelRes.class))
+                .toList();
+        listProductRes.setProductList(productModelRes);
+        listProductRes.setTotal(products.size());
+        return listProductRes;
+    }
 }

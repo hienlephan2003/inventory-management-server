@@ -18,11 +18,12 @@ public class OutboundReport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Date date;
-    private int quantity;
+    private Integer quantity;
     private BigDecimal totalPrice;
     @ManyToOne
     @JoinColumn(name = "shipment_id")
     private Shipment shipment;
     @OneToMany(mappedBy = "outboundReport", cascade = CascadeType.ALL)
     private List<OutboundReportDetail> items;
+    private Boolean isExpired;
 }

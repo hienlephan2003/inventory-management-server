@@ -22,7 +22,6 @@ public class ShipmentServiceImpl implements  ShipmentService {
 
     @Override
     public ListShipmentModelRes getShipments(ListQueryParam params) {
-        
         Pageable paging = PageRequest.of(params.getPageNumber(), params.getPageSize());
         Page<Shipment> pagedResult;
         pagedResult = shipmentRepository.findAll(paging);

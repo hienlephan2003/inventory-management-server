@@ -22,8 +22,8 @@ public class InboundReportDetail {
     @ManyToOne()
     @JoinColumn(name = "inbound_report_id")
     private InboundReport inboundReport;
-    private int quantity;
-    private int stockQuantity;
+    private Integer quantity;
+    private Integer stockQuantity;
     private BigDecimal totalPrice;
     private BigDecimal unitPrice;
     private Date manufactoringDate;
@@ -31,4 +31,5 @@ public class InboundReportDetail {
     @ManyToOne()
     @JoinColumn(name = "product_id")
     private Product product;
+    private Date createdDate;
 }

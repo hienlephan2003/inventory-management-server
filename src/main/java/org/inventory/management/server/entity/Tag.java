@@ -18,7 +18,7 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private boolean isDeleted;
+    private Boolean isDeleted;
     private String description;
     private Date createdDate;
     @ManyToMany()

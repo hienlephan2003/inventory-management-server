@@ -14,4 +14,5 @@ public interface ProductService {
     ProductModelRes deleteProduct(long id);
     ListProductRes getProducts(ListQueryParam params);
     ListProductRes getAllProducts();
+    ListProductRes getNeedInboundProducts();
 }

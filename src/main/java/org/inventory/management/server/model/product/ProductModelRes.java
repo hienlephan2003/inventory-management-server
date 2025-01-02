@@ -25,4 +25,5 @@ public class ProductModelRes {
     private String description;
     private Set<TagModelRes> tags;
     private List<InboundReportDetailModelRes> items;
+    private int quantity;
 }
