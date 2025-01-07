@@ -38,6 +38,7 @@ public class TagServiceImpl implements  TagService{
                     .orElseThrow(() -> new IllegalArgumentException("Not found tags"));
             tag.setName(tagModel.getName());
             tag.setDescription(tagModel.getDescription());
+            tag.setIsDeleted(false);
             tag.setArea(area);
         }
         else{
@@ -45,6 +46,7 @@ public class TagServiceImpl implements  TagService{
                     .name(tagModel.getName())
                     .description(tagModel.getDescription())
                     .createdDate(new Date())
+                    .isDeleted(false)
                     .area(area)
                     .build();
         }
