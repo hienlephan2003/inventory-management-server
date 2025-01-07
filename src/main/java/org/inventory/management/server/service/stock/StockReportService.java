@@ -23,6 +23,7 @@ public interface StockReportService {
      StockReportDetailModelRes createStockReportDetail(StockReportRequest request);
      List<ChartData> generateChartData();
      List<StockReportModelRes> getStockReports();
+     StockReportModelRes getStockReportById(Long id);
      StockReport getStockReportOfLastMonth();
      List<ChartData> generateChartData(Date startDate, Date endDate);
 }

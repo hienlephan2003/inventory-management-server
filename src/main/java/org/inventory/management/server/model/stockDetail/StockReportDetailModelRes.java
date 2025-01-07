@@ -3,6 +3,7 @@ package org.inventory.management.server.model.stockDetail;
 import lombok.Data;
 import org.inventory.management.server.entity.StockReport;
 import org.inventory.management.server.model.product.ProductModelRes;
+import org.inventory.management.server.model.stock.StockReportModelRes;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -15,7 +16,7 @@ public class StockReportDetailModelRes {
     private int outboundQuantity;
     private int expiredQuantity;
     private Date createdDate;
-    private StockReport stockReport;
+    //private StockReportModelRes stockReport;
     private Integer inboundQuantity;
     private Integer stockQuantity;
     private BigDecimal inboundPrice;

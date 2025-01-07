@@ -17,7 +17,7 @@ public class StatisticServiceImpl implements StatisticService {
         StockReport stockReport = stockReportService.getStockReportOfThisMonth();
         StockReport stockReportOfLastMonth = stockReportService.getStockReportOfLastMonth();
 
-        // Current stock and inbound numbers
+        // Current stock and inbound numbers    
         int currentStock = stockReport.getStockQuantity();
         int currentInbound = stockReport.getInboundQuantity();
         int currentInboundNeeded = stockReport.getNeedInboundQuantity();

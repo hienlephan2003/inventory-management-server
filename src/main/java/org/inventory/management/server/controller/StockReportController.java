@@ -39,4 +39,9 @@ public class StockReportController {
     ResponseEntity<List<StockReportModelRes>> getStockReports(){
         return ResponseEntity.ok(stockReportService.getStockReports());
     }
+    @GetMapping("/{id}")
+    ResponseEntity<StockReportModelRes> getStockReport(@PathVariable Long id){
+        return ResponseEntity.ok(stockReportService.getStockReportById(id));
+    }
+
 }

@@ -63,6 +63,7 @@ public class StockReportServiceImpl implements StockReportService {
                 .inboundPrice(inboundPrice.get())
                 .outboundPrice(outboundPrice.get())
                 .needInboundQuantity(needInboundQuantity)
+                .stockReport(stockReport)
                 .build();
     }
 
@@ -293,6 +294,11 @@ public class StockReportServiceImpl implements StockReportService {
     @Override
     public List<StockReportModelRes> getStockReports() {
         return stockReportRepository.findAll().stream().map(item -> mapper.map(item, StockReportModelRes.class)).toList();
+    }
+
+    @Override
+    public StockReportModelRes getStockReportById(Long id) {
+        return mapper.map(stockReportRepository.findById(id), StockReportModelRes.class);
     }
 
     public List<ChartData> generateChartData(Date startDate, Date endDate) {
