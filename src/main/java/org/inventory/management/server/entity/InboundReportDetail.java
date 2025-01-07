@@ -32,4 +32,5 @@ public class InboundReportDetail {
     @JoinColumn(name = "product_id")
     private Product product;
     private Date createdDate;
+    private Boolean isActivated = false;
 }

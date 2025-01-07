@@ -57,7 +57,7 @@ public class StockReportServiceImpl implements StockReportService {
         // Build and return StockReportDetail
         return StockReportDetail.builder()
                 .product(product)
-                .stockQuantity(product.getMaxQuantity())
+                .stockQuantity(product.getQuantity())
                 .inboundQuantity(inboundQuantity.get())
                 .outboundQuantity(outboundQuantity.get())
                 .inboundPrice(inboundPrice.get())

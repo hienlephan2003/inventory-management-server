@@ -47,6 +47,20 @@ public class OutboundReportServiceImpl implements OutboundReportService {
     }
 
     @Override
+    public OutboundReportModelRes onShipmentCancel(Shipment shipment) {
+        OutboundReport inboundReport = outboundReportRepository.findOutboundReportByShipment(shipment).orElseThrow(() ->
+                new IllegalArgumentException("Not found outbound report"));
+        inboundReport.getItems().forEach(item -> {
+            Product product = item.getProduct();
+            product.setQuantity(product.getQuantity() + item.getQuantity());
+            productRepository.save(product);
+            item.setIsActivated(false);
+            outboundReportDetailRepository.save(item);
+        });
+        return modelMapper.map(inboundReport, OutboundReportModelRes.class);
+    }
+
+    @Override
     public OutboundReportModelRes getOutboundReportById(long id) {
         OutboundReport OutboundReport = outboundReportRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Not found OutboundReport with id"+ id));

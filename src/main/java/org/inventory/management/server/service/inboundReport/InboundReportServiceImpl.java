@@ -5,10 +5,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.inventory.management.server.entity.*;
 import org.inventory.management.server.model.enumeratiion.ShipmentType;
-import org.inventory.management.server.model.inboundReport.CreateInboundReportModel;
-import org.inventory.management.server.model.inboundReport.InboundReportModelRes;
-import org.inventory.management.server.model.inboundReport.ListDataRes;
-import org.inventory.management.server.model.inboundReport.UpdateInboundReportModel;
+import org.inventory.management.server.model.inboundReport.*;
 import org.inventory.management.server.model.inboundReportDetail.CreateInboundReportDetailModel;
 import org.inventory.management.server.model.inboundReportDetail.InboundReportDetailModelRes;
 import org.inventory.management.server.model.inboundReportDetail.UpdateInboundReportDetailModel;
@@ -52,6 +49,20 @@ public class InboundReportServiceImpl implements InboundReportService {
         return res;
     }
 
+    @Override
+    public InboundReportModelRes onShipmentSuccess(Shipment shipment) {
+        InboundReport inboundReport = inboundReportRepository.findInboundReportByShipment(shipment).orElseThrow(() ->
+                new IllegalArgumentException("Not found inbound report"));
+        inboundReport.getItems().forEach(item -> {
+            Product product = item.getProduct();
+            product.setQuantity(product.getQuantity() + item.getQuantity());
+            productRepository.save(product);
+            item.setIsActivated(true);
+            inboundReportDetailRepository.save(item);
+        });
+        return modelMapper.map(inboundReport, InboundReportModelRes.class);
+    }
+
     private InboundReportDetail createInboundReportDetail(CreateInboundReportDetailModel item, InboundReport inboundReport) {
         Product product = productRepository.findById(item.getProductId())
                 .orElseThrow(() -> new EntityNotFoundException("Not found Product with id: " + item.getProductId()));
@@ -61,7 +72,7 @@ public class InboundReportServiceImpl implements InboundReportService {
         detail.setStockQuantity(item.getQuantity());
         detail.setInboundReport(inboundReport);
         detail.setCreatedDate(inboundReport.getDate());
-        product.setQuantity(product.getQuantity() + item.getQuantity());
+//        product.setQuantity(product.getQuantity() + item.getQuantity());
         stockReportDetailService.onInboundReport(detail);
         BigDecimal subTotal = item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
         detail.setTotalPrice(subTotal);

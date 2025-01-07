@@ -12,12 +12,13 @@ import java.util.List;
 
 public interface InboundReportDetailRepository extends JpaRepository<InboundReportDetail, Long> {
     List<InboundReportDetail> findByProductAndExpirationDateAfterAndStockQuantityGreaterThanOrderByExpirationDateAsc(Product product, Date expirationDate, int stockQuantity);
-    @Query("SELECT s FROM InboundReportDetail s WHERE s.product = :product AND s.createdDate BETWEEN :startTime AND :endTime")
+    @Query("SELECT s FROM InboundReportDetail s WHERE s.product = :product AND s.createdDate BETWEEN :startTime AND :endTime AND s.isActivated = true")
     List<InboundReportDetail> findByProductAndCreatedDateBetween(
             @Param("product") Product product,
             @Param("startTime") Date startTime,
             @Param("endTime") Date endTime);
-    @Query("SELECT s FROM InboundReportDetail s WHERE s.createdDate BETWEEN :startTime AND :endTime")
+
+    @Query("SELECT s FROM InboundReportDetail s WHERE s.createdDate BETWEEN :startTime AND :endTime AND s.isActivated = true")
     List<InboundReportDetail> findByCreatedDateBetween(
             @Param("startTime") Date startTime,
             @Param("endTime") Date endTime);

@@ -11,12 +11,12 @@ import java.util.Date;
 import java.util.List;
 
 public interface OutboundReportDetailRepository extends JpaRepository<OutboundReportDetail, Long> {
-    @Query("SELECT s FROM OutboundReportDetail s WHERE s.product = :product AND s.createdDate BETWEEN :startTime AND :endTime")
+    @Query("SELECT s FROM OutboundReportDetail s WHERE s.product = :product AND s.createdDate BETWEEN :startTime AND :endTime and s.isActivated=true")
     List<OutboundReportDetail> findByProductAndCreatedDateBetween(
             @Param("product") Product product,
             @Param("startTime") Date startTime,
             @Param("endTime") Date endTime);
-    @Query("SELECT s FROM OutboundReportDetail s WHERE s.createdDate BETWEEN :startTime AND :endTime")
+    @Query("SELECT s FROM OutboundReportDetail s WHERE s.createdDate BETWEEN :startTime AND :endTime and s.isActivated=true")
     List<OutboundReportDetail> findByCreatedDateBetween(
             @Param("startTime") Date startTime,
             @Param("endTime") Date endTime);

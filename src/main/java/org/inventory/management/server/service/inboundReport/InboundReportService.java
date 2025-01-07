@@ -2,6 +2,7 @@ package org.inventory.management.server.service.inboundReport;
 
 import org.inventory.management.server.entity.OutboundLineItem;
 import org.inventory.management.server.entity.OutboundReportDetail;
+import org.inventory.management.server.entity.Shipment;
 import org.inventory.management.server.model.inboundReport.CreateInboundReportModel;
 import org.inventory.management.server.model.inboundReport.InboundReportModelRes;
 import org.inventory.management.server.model.inboundReport.ListDataRes;
@@ -14,7 +15,7 @@ import java.util.Map;
 public interface InboundReportService {
     InboundReportModelRes getInboundReportById(long id);
     ListDataRes<InboundReportModelRes> getInboundReports();
-
+    InboundReportModelRes onShipmentSuccess(Shipment shipment);
     InboundReportModelRes updateInboundReport(long id, UpdateInboundReportModel InboundReportModel);
 
     InboundReportModelRes createInboundReport(CreateInboundReportModel InboundReportModel);

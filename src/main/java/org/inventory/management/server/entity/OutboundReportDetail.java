@@ -30,4 +30,6 @@ public class OutboundReportDetail {
     @OneToMany(mappedBy = "outboundReportDetail", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<OutboundLineItem> inbounds;
     private Date createdDate = new Date();
+    private Boolean isActivated = true;
+
 }

@@ -1,5 +1,6 @@
 package org.inventory.management.server.service.outboundReport;
 
+import org.inventory.management.server.entity.Shipment;
 import org.inventory.management.server.model.inboundReport.InboundReportModelRes;
 import org.inventory.management.server.model.inboundReport.ListDataRes;
 import org.inventory.management.server.model.outboundReport.OutboundReportModelRes;
@@ -9,6 +10,7 @@ import java.util.Map;
 
 public interface OutboundReportService {
     ListDataRes<OutboundReportModelRes> getOutboundReports();
+    OutboundReportModelRes onShipmentCancel(Shipment shipment);
 
     OutboundReportModelRes getOutboundReportById(long id) ;
     OutboundReportModelRes updateOutboundReport(long id, UpsertOutboundReportModel OutboundReportModel);
