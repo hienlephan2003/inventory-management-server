@@ -3,6 +3,8 @@ package org.inventory.management.server.model.stock;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.inventory.management.server.entity.StockReportDetail;
+import org.inventory.management.server.model.employee.EmployeeModelRes;
+import org.inventory.management.server.model.enumeratiion.StockReportType;
 import org.inventory.management.server.model.stockDetail.StockReportDetailModelRes;
 
 import java.math.BigDecimal;
@@ -23,4 +25,8 @@ public class StockReportModelRes {
     private BigDecimal outboundPrice;
     private BigDecimal totalPrice;
     private Integer needInboundQuantity;
+    private EmployeeModelRes employee;
+    private StockReportType stockReportType;
+    private Date date;
+
 }

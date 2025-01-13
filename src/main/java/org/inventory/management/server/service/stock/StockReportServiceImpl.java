@@ -2,12 +2,16 @@ package org.inventory.management.server.service.stock;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.inventory.management.server.entity.*;
+import org.inventory.management.server.model.employee.UserPrinciple;
 import org.inventory.management.server.model.statistic.ChartData;
 import org.inventory.management.server.model.stock.StockReportModelRes;
 import org.inventory.management.server.model.stock.StockReportRequest;
 import org.inventory.management.server.model.stockDetail.StockReportDetailModelRes;
 import org.inventory.management.server.repository.*;
+import org.inventory.management.server.service.employee.EmployeeService;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -28,6 +32,7 @@ public class StockReportServiceImpl implements StockReportService {
     private final InboundReportDetailRepository inboundReportDetailRepository;
     private final ModelMapper mapper;
     private final OutboundReportDetailRepository outboundReportDetailRepository;
+    private final EmployeeService userService;
 
     public StockReportDetail createStockReportDetail(Product product, StockReport stockReport) {
         // Fetch inbound report details and calculate total price and quantity
@@ -70,8 +75,11 @@ public class StockReportServiceImpl implements StockReportService {
     @Transactional
     @Override
     public StockReportModelRes createStockReport(StockReportRequest request) {
+        Long userId = ((UserPrinciple) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+        Employee employee = userService.findById(userId);
         StockReport stockReport = mapper.map(request, StockReport.class);
         stockReport.setItems(new ArrayList<>());
+        stockReport.setEmployee(employee);
         StockReport stockReportData = stockReportRepository.save(stockReport);
         List<Product> products = productRepository.findAll();
         AtomicReference<BigDecimal> totalPrice = new AtomicReference<>(BigDecimal.ZERO);

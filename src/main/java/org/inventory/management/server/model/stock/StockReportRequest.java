@@ -1,6 +1,7 @@
 package org.inventory.management.server.model.stock;
 
 import lombok.Data;
+import org.inventory.management.server.model.enumeratiion.StockReportType;
 
 import java.util.Date;
 
@@ -10,4 +11,5 @@ public class StockReportRequest {
     private Date endDate;
     private String name;
     private Long productId;
+    private StockReportType stockReportType;
 }

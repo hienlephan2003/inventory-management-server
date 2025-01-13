@@ -2,6 +2,7 @@ package org.inventory.management.server.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.inventory.management.server.model.enumeratiion.ProductType;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -34,4 +35,11 @@ public class Product {
     private Company company;
     @ManyToMany(mappedBy = "products")
     private Set<Tag> tags = new HashSet<>();
+    @Enumerated(EnumType.STRING)
+    private ProductType type; // Loại (Dạng kem, Dạng xịt, Dạng lotion, Dạng bột…)
+    private String capacity; // Dung tích (Đối với Dạng kem, Lotion…)
+    private String weight; // Trọng lượng (Đối với Dạng bột…)
+    private String color; // Màu sắc
+    private String size; // Kích thước
+    private String volume; // Dung lượng
 }

@@ -8,6 +8,7 @@ import lombok.Data;
 import org.inventory.management.server.entity.Category;
 import org.inventory.management.server.entity.Company;
 import org.inventory.management.server.entity.Tag;
+import org.inventory.management.server.model.enumeratiion.ProductType;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -33,4 +34,12 @@ public class UpsertProductModel {
     private List<Long> tagIds;
     private String description;
     private int quantity;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ProductType type; // Loại (Dạng kem, Dạng xịt, Dạng lotion, Dạng bột…)
+    private String capacity; // Dung tích (Đối với Dạng kem, Lotion…)
+    private String weight; // Trọng lượng (Đối với Dạng bột…)
+    private String color; // Màu sắc
+    private String size; // Kích thước
+    private String volume; // Dung lượng
 }

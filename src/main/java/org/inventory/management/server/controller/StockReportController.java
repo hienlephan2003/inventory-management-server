@@ -43,5 +43,4 @@ public class StockReportController {
     ResponseEntity<StockReportModelRes> getStockReport(@PathVariable Long id){
         return ResponseEntity.ok(stockReportService.getStockReportById(id));
     }
-
 }
