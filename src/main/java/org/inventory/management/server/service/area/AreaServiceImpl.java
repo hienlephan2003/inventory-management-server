@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.inventory.management.server.entity.Area;
+import org.inventory.management.server.entity.Tag;
 import org.inventory.management.server.model.area.AreaRequest;
 import org.inventory.management.server.model.area.AreaRes;
 import org.inventory.management.server.repository.AreaRepository;
@@ -30,7 +31,13 @@ public class AreaServiceImpl implements AreaService {
 
     @Override
     public List<AreaRes> getAll() {
-        return areaRepository.findAll().stream().map(item -> modelMapper.map(item, AreaRes.class)).toList();
+        return areaRepository.findAll().stream().map(item -> {
+            List<Tag> tags = item.getTags().stream()
+                    .filter(tag -> !tag.getIsDeleted())
+                    .toList();
+            item.setTags(tags);
+           return modelMapper.map(item, AreaRes.class);
+        }).toList();
     }
 
     @Override
