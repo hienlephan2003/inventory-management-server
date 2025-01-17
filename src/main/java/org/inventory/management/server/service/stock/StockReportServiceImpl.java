@@ -418,7 +418,7 @@ public class StockReportServiceImpl implements StockReportService {
         endDate = getEndOfDay(endDate);
 
         // Fetch the stock report data for last month from the repository
-        return stockReportRepository.findFirstByYearAndMonth(startDate, endDate);
+        return stockReportRepository.findFirstByYearAndMonth(startDate, endDate).get(0);
     }
 
 }
