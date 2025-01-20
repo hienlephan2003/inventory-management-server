@@ -38,7 +38,12 @@ public class ProductServiceImpl implements ProductService {
                 0
         );
        ProductModelRes res = modelMapper.map(product, ProductModelRes.class);
-       res.setItems(items.stream().map(item -> modelMapper.map(item, InboundReportDetailModelRes.class)).toList());
+       res.setItems(items.stream().map(item -> {
+
+           InboundReportDetailModelRes itemRes = modelMapper.map(item, InboundReportDetailModelRes.class);
+           itemRes.setId(item.getInboundReport().getId());
+           return itemRes;
+       }).toList());
        return res;
     }
 
